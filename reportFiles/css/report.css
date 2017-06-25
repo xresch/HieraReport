@@ -1,0 +1,69 @@
+/**************************************************************************************
+ * Some CSS for the report... yes this comment is only here that there is a comment
+ * and I can put the licensing information on it. ;-P
+ *
+ * © Reto Scheiwiller, 2017 - MIT License
+ **************************************************************************************/
+
+body{
+	padding-top: 70px;
+}
+
+.panel{
+	margin: 2px 5px 2px 25px;
+}
+
+.panel-body{
+	padding: 10px;
+}
+
+.modal-dialog{
+	width: 80%;
+}
+
+.right {
+    position: absolute;
+    right: 0px;
+}
+
+.status-panel{
+	overflow: auto;
+	height: 300px;
+}
+
+.underlined {
+	border-bottom: 1px solid black;
+}
+
+.screenshot{
+    max-width: 100%;
+    max-height: 100%;
+    width: 700px;
+    display: block;
+}
+
+.report-carousel {
+    background-color: #555;
+}
+
+.carousel-image{
+	max-width: 100%;
+    max-height: 100%;
+}
+
+.carousel-indicators li{
+	border: 1px solid #9d9d9d;
+}
+
+.carousel-indicators .active{
+	background-color: #9d9d9d;
+}
+
+.carousel-control{
+	padding-top: 50px;
+}
+
+.dropdown-menu {
+    max-height: 500px;
+    overflow: auto;
+}

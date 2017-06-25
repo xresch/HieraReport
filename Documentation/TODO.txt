@@ -1,0 +1,6 @@
+- Duration overview
+- add timestamp to items
+- Management View
+	- 2 Pie Charts Suite / Tests
+	- 2 Tables 
+	- Pass/Fail
