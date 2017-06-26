@@ -495,8 +495,8 @@ public class Report {
 		}
 		String json = Utils.generateJSON(rootItem.get().getChildren());
 		//System.err.println(json);
-		
-		ReportUtils.writeStringToFile(REPORT_BASE_DIR, "result.json", json);
+		String javascript = "DATA = DATA.concat(\n"+json+"\n);";
+		ReportUtils.writeStringToFile(REPORT_BASE_DIR, "data.js", javascript);
 		ReportUtils.replaceInFile(REPORT_BASE_DIR+"/report.html", "###JSONResult###", json);
 	}
 	

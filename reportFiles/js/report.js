@@ -9,9 +9,12 @@
 /**************************************************************************************
  * GLOBALS
  *************************************************************************************/
+var DATA = [];
+var DATA_FILES;
+
 var GLOBAL_COUNTER = 0;
 
-var GLOBAL_STATS = {
+var TYPE_STATS = {
 	Suite: { 		All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
 	Class: { 		All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
 	Test: { 		All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
@@ -20,7 +23,8 @@ var GLOBAL_STATS = {
 	Assert: { 		All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
 	MessageInfo: { 	All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
 	MessageWarn: { 	All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
-	MessageError: { All: [], Undefined: [], Success: [], Skipped: [], Fail: [] }
+	MessageError: { All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
+	Undefined: 	  { All: [], Undefined: [], Success: [], Skipped: [], Fail: [] }
 }
 
 BG_COLORS = [
@@ -54,7 +58,8 @@ var ItemType = {
 	Assert: "Assert",
 	MessageInfo: "MessageInfo",
 	MessageWarn: "MessageWarn",
-	MessageError: "MessageError"
+	MessageError: "MessageError",
+	Undefined: "Undefined"
 }
 
 var StatusIcon = {
@@ -73,16 +78,78 @@ var TypeIcon = {
 		Assert: '<i class="fa fa-question-circle"></i>&nbsp;',
 		MessageInfo: '<i class="fa fa-info-circle" style="color: #007EFF;"></i>&nbsp;',
 		MessageWarn: '<i class="fa fa-warning"  style="color: orange;"></i>&nbsp;',
-		MessageError: '<i class="fa fa-times-circle"  style="color: red;"></i>&nbsp;'
+		MessageError: '<i class="fa fa-times-circle"  style="color: red;"></i>&nbsp;',
+		Undefined: '<i class="fa fa-question-circle" style="color: gray;"></i>&nbsp;'
 	}
 
+
 /**************************************************************************************
+ * The first method called, it starts to load the data from the data files.
+ *************************************************************************************/
+loadData();
+
+function loadData(){
+	
+	//if not defined set data.js as default
+	if(DATA_FILES == undefined){
+		DATA_FILES = ["./data.js"];
+	}
+
+	loadDataScript(0);
+}
+
+/**************************************************************************************
+ * Load all javascript files containing data by chaining the method together. 
+ * After one file got loaded trigger the method again with "onload" to load the next
+ * file defined in the DATA_FILES array. This will prevent concurrency issues.
+ * Execute initialize()-method after the last file was loaded.
  * 
  *************************************************************************************/
-initialize();
-
-function initialize(){
+function loadDataScript(scriptIndex){
+	
+	if(scriptIndex < DATA_FILES.length){
 		
+		var head = document.getElementsByTagName('head')[0];
+		
+		var script = document.createElement('script');
+		
+		console.log("Load data file >> "+DATA_FILES[scriptIndex]);
+		script.src = DATA_FILES[scriptIndex];
+		script.type = "text/javascript";
+		
+		script.onreadystatechange = function(){
+			console.log("readyState");
+			if(this.readyState == "complete" || this.readyState == "loaded"){
+				initialize();
+			}
+		}
+		
+		if((scriptIndex+1) == DATA_FILES.length){
+			script.onload= function(){
+				console.log("all data loaded");
+				initialize();
+			}
+		}else{
+			script.onload= function(){
+				loadDataScript(scriptIndex+1);
+			}
+		}
+		
+		head.appendChild(script);
+	}
+		
+
+}
+/**************************************************************************************
+ * After all data was loaded the initialize method is executed. This will go through
+ * the whole data structure and does initial tasks like calculating statistics and
+ * populating the test dropdown.
+ * 
+ *************************************************************************************/
+function initialize(){
+	
+
+	
 	for(var i = 0; i < DATA.length; i++){
 		initialWalkthrough(null, DATA[i]);
 	}
@@ -91,16 +158,16 @@ function initialize(){
 	// Calculate Statistics per Type
 	for(var type in ItemType){
 		
-		var all = GLOBAL_STATS[type].All.length;
-		var success = GLOBAL_STATS[type][ItemStatus.Success].length;
-		var skipped = GLOBAL_STATS[type][ItemStatus.Skipped].length;
-		var fail = GLOBAL_STATS[type][ItemStatus.Fail].length;
-		var undef = GLOBAL_STATS[type][ItemStatus.Undefined].length;
+		var all = TYPE_STATS[type].All.length;
+		var success = TYPE_STATS[type][ItemStatus.Success].length;
+		var skipped = TYPE_STATS[type][ItemStatus.Skipped].length;
+		var fail = TYPE_STATS[type][ItemStatus.Fail].length;
+		var undef = TYPE_STATS[type][ItemStatus.Undefined].length;
 		
-		GLOBAL_STATS[type].percentSuccess = ( (success / all) * 100).toFixed(1);
-		GLOBAL_STATS[type].percentSkipped =( (skipped / all) * 100).toFixed(1);
-		GLOBAL_STATS[type].percentFail = ( (fail / all) * 100).toFixed(1);
-		GLOBAL_STATS[type].percentUndefined = ( (undef / all) * 100).toFixed(1);
+		TYPE_STATS[type].percentSuccess = ( (success / all) * 100).toFixed(1);
+		TYPE_STATS[type].percentSkipped =( (skipped / all) * 100).toFixed(1);
+		TYPE_STATS[type].percentFail = ( (fail / all) * 100).toFixed(1);
+		TYPE_STATS[type].percentUndefined = ( (undef / all) * 100).toFixed(1);
 					
 	}
 	
@@ -108,9 +175,9 @@ function initialize(){
 	// Populate Test Dropdown
 	testDropdown = $("#testDropdown");
 	
-	var length = GLOBAL_STATS.Test.All.length;
+	var length = TYPE_STATS.Test.All.length;
 	for(var i = 0 ;	 i < length; i++){
-		var currentTest = GLOBAL_STATS.Test.All[i];
+		var currentTest = TYPE_STATS.Test.All[i];
 		
 		var listItem = $('<li>');
 		var link = $('<a href="#" onclick="drawTestView(this)">'+
@@ -142,11 +209,37 @@ function initialWalkthrough(parent, currentItem){
 	}
 	
 	//------------------------------------
+	// Check values
+	
+	if(currentItem.type == undefined || currentItem.type == null){
+		currentItem.type = ItemType.Undefined;
+	}else if(!(currentItem.type in ItemType)){
+		console.log("ItemType '"+currentItem.status+"' was not found, using 'Undefined'");
+		currentItem.type = ItemType.Undefined;
+	}
+	
+	if(currentItem.status == undefined || currentItem.status == null){
+		currentItem.status = ItemStatus.Undefined;
+	}else if(!(currentItem.status in ItemStatus)){
+		console.log("ItemStatus '"+currentItem.status+"' was not found, using 'Undefined'");
+		currentItem.status = ItemStatus.Undefined;
+	}
+	
+	if(currentItem.duration == undefined || currentItem.duration == null){
+		currentItem.duration = "-";
+	}
+	
+	if(currentItem.itemNumber == undefined || currentItem.itemNumber == null){
+		currentItem.itemNumber = "";
+	}
+	
+	
+	//------------------------------------
 	// Calculate Statistics per Item
 	if(isObjectWithData(currentItem)){
 		
-		GLOBAL_STATS[currentItem.type].All.push(currentItem);	
-		GLOBAL_STATS[currentItem.type][currentItem.status].push(currentItem);
+		TYPE_STATS[currentItem.type].All.push(currentItem);	
+		TYPE_STATS[currentItem.type][currentItem.status].push(currentItem);
 
 		if(currentItem.exceptionMessage != null
 		|| currentItem.exceptionStacktrace != null){
@@ -178,7 +271,7 @@ function initialWalkthrough(parent, currentItem){
 		currentItem.percentFail = ( (currentItem.statusCount.Fail / currentItem.statusCount.All) * 100).toFixed(1);
 		currentItem.percentUndefined = ( (currentItem.statusCount.Undefined / currentItem.statusCount.All) * 100).toFixed(1);
 			
-		console.log(currentItem.statusCount);
+		//console.log(currentItem.statusCount);
 	}
 	
 }
@@ -602,8 +695,8 @@ function printStatusChart(){
 				data: []
 			}; 
 		
-		for(type in GLOBAL_STATS){
-			var count = GLOBAL_STATS[type][status].length;
+		for(type in TYPE_STATS){
+			var count = TYPE_STATS[type][status].length;
 			dataset.data.push(count);	
 		}
 		
@@ -713,7 +806,7 @@ function printCountStatistics(parent){
 		var row = $('<tr>');
 		row.append('<td>'+type+'</td>');
 		for(var status in ItemStatus ){
-			row.append('<td>'+GLOBAL_STATS[type][status].length+'</td>'); 
+			row.append('<td>'+TYPE_STATS[type][status].length+'</td>'); 
 		}
 		
 		table.append(row);
@@ -741,16 +834,16 @@ function printPercentageStatistics(parent){
 		
 		var row = $('<tr>');
 		
-		GLOBAL_STATS[type].percentSuccess
-		GLOBAL_STATS[type].percentSkipped 
-		GLOBAL_STATS[type].percentFail
-		GLOBAL_STATS[type].percentUndefined
+		TYPE_STATS[type].percentSuccess
+		TYPE_STATS[type].percentSkipped 
+		TYPE_STATS[type].percentFail
+		TYPE_STATS[type].percentUndefined
 					
 		row.append('<td>'+type+'</td>');
-		row.append('<td>'+GLOBAL_STATS[type].percentSuccess+'</td>'); 
-		row.append('<td>'+GLOBAL_STATS[type].percentSkipped+'</td>'); 
-		row.append('<td>'+GLOBAL_STATS[type].percentFail+'</td>'); 
-		row.append('<td>'+GLOBAL_STATS[type].percentUndefined+'</td>'); 
+		row.append('<td>'+TYPE_STATS[type].percentSuccess+'</td>'); 
+		row.append('<td>'+TYPE_STATS[type].percentSkipped+'</td>'); 
+		row.append('<td>'+TYPE_STATS[type].percentFail+'</td>'); 
+		row.append('<td>'+TYPE_STATS[type].percentUndefined+'</td>'); 
 				
 		table.append(row);
 	}
@@ -939,10 +1032,10 @@ function drawStatusOverviewPage(){
 			panel.append(panelBody);
 			
 			panelHeader.append()
-			panelHeader.append(status+' ('+GLOBAL_STATS[type][status].length+')');
+			panelHeader.append(status+' ('+TYPE_STATS[type][status].length+')');
 			
-			for(var i = 0; i < GLOBAL_STATS[type][status].length; i++){
-				var item = GLOBAL_STATS[type][status][i];
+			for(var i = 0; i < TYPE_STATS[type][status].length; i++){
+				var item = TYPE_STATS[type][status][i];
 				
 				//use paragraph to display each item on its own line
 				var paragraph = $("<p>");
@@ -991,11 +1084,11 @@ function drawTestView(element){
  *************************************************************************************/
 function printItemOverview(parentRow, itemType, columnWidth){
 	
-	var successCount = GLOBAL_STATS[itemType][ItemStatus.Success].length; 
-	var skippedCount = GLOBAL_STATS[itemType][ItemStatus.Skipped].length; 
-	var failedCount = GLOBAL_STATS[itemType][ItemStatus.Fail].length;
-	var undefCount = GLOBAL_STATS[itemType][ItemStatus.Undefined].length;
-	var totalCount = GLOBAL_STATS[itemType]["All"].length;
+	var successCount = TYPE_STATS[itemType][ItemStatus.Success].length; 
+	var skippedCount = TYPE_STATS[itemType][ItemStatus.Skipped].length; 
+	var failedCount = TYPE_STATS[itemType][ItemStatus.Fail].length;
+	var undefCount = TYPE_STATS[itemType][ItemStatus.Undefined].length;
+	var totalCount = TYPE_STATS[itemType]["All"].length;
 	
 	var column = $('<div class="col-md-'+columnWidth+'">');
 	parentRow.append(column);
@@ -1018,10 +1111,10 @@ function printItemOverview(parentRow, itemType, columnWidth){
 	var tableData = {
 		headers: ["Status", "Count", "Percentage"],
 		rows: [
-		   [ItemStatus.Success, successCount, GLOBAL_STATS[itemType].percentSuccess],
-		   [ItemStatus.Skipped, skippedCount, GLOBAL_STATS[itemType].percentSkipped],
-		   [ItemStatus.Fail, failedCount, GLOBAL_STATS[itemType].percentFail],
-		   [ItemStatus.Undefined, undefCount, GLOBAL_STATS[itemType].percentUndefined],
+		   [ItemStatus.Success, successCount, TYPE_STATS[itemType].percentSuccess],
+		   [ItemStatus.Skipped, skippedCount, TYPE_STATS[itemType].percentSkipped],
+		   [ItemStatus.Fail, failedCount, TYPE_STATS[itemType].percentFail],
+		   [ItemStatus.Undefined, undefCount, TYPE_STATS[itemType].percentUndefined],
 		   ["Total", totalCount, "100.0"]
 		]
 	};
@@ -1273,8 +1366,8 @@ function drawScreenshots(){
 	
 	var dropdownValues = $('<ul class="dropdown-menu" aria-labelledby="dLabel">');
 
-	for(var i = 0; i < GLOBAL_STATS.Test.All.length; i++){
-		var currentTest = GLOBAL_STATS.Test.All[i];
+	for(var i = 0; i < TYPE_STATS.Test.All.length; i++){
+		var currentTest = TYPE_STATS.Test.All[i];
 		
 		var listItem = $('<li>');
 		var link = $('<a href="#" onclick="printScreenshotsForTest(this)">'+
@@ -1305,18 +1398,19 @@ function draw(view){
 	cleanup();
 
 	switch(view){
-		case "overview": 		drawOverviewPage(); break;
-		case "tree": 			drawPanelTree(); break;
-		case "status": 			drawStatusOverviewPage(); break;
+		case "overview": 			drawOverviewPage(); break;
+		case "tree": 				drawPanelTree(); break;
+		case "status": 				drawStatusOverviewPage(); break;
 		
-		case "typebarchart": 	printStatusChart(); break;
-		case "statistics": 		drawStatistics(); break;
+		case "typebarchart": 		printStatusChart(); break;
+		case "statsStatusByType": 	drawStatistics(); break;
 
-		case "table": 			drawTable(DATA, true); break;
-		case "csv": 			drawCSV(); break;
-		case "json": 			drawJSON(); break;
-		case "exceptions": 		drawExceptionsPage(); break;
-		case "screenshots": 	drawScreenshots(); break;
+		case "tableSimple": 		drawTable(DATA, false); break;
+		case "tableDetailed": 		drawTable(DATA, true); break;
+		case "csv": 				drawCSV(); break;
+		case "json": 				drawJSON(); break;
+		case "exceptions": 			drawExceptionsPage(); break;
+		case "screenshots": 		drawScreenshots(); break;
 	}
 	
 }
