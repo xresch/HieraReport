@@ -9,12 +9,14 @@
 /**************************************************************************************
  * GLOBALS
  *************************************************************************************/
-var DATA = [];
-var DATA_FILES;
 
-var GLOBAL_COUNTER = 0;
 
-var TYPE_STATS = {
+DATA = [];
+DATA_FILES;
+
+GLOBAL_COUNTER = 0;
+
+TYPE_STATS = {
 	Suite: { 		All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
 	Class: { 		All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
 	Test: { 		All: [], Undefined: [], Success: [], Skipped: [], Fail: [] },
@@ -40,16 +42,16 @@ BORDER_COLORS= [
     "#a94442",
     "#333"
 ]
-var GLOBAL_EXCEPTION_ITEMS = [];
+GLOBAL_EXCEPTION_ITEMS = [];
 
-var ItemStatus = {
+ItemStatus = {
 		Success: "Success",
 		Skipped: "Skipped",
 		Fail: "Fail",
 		Undefined: "Undefined",
 }
 
-var ItemType = {
+ItemType = {
 	Suite: "Suite",
 	Class: "Class",
 	Test: "Test",
@@ -62,14 +64,14 @@ var ItemType = {
 	Undefined: "Undefined"
 }
 
-var StatusIcon = {
+StatusIcon = {
 		Success: '<i class="fa fa-check-circle" style="color: green;"></i>&nbsp;',
 		Skipped: '<i class="fa fa-chevron-circle-right" style="color: orange;"></i>&nbsp;',
 		Fail: '<i class="fa fa-times-circle" style="color: red;"></i>&nbsp;',
 		Undefined: '<i class="fa fa-question-circle" style="color: gray;"></i>&nbsp;'
 }
 
-var TypeIcon = {
+TypeIcon = {
 		Suite: '<i class="fa fa-folder-open"></i>&nbsp;',
 		Class: '<i class="fa fa-copyright"></i>&nbsp;',
 		Test: '<i class="fa fa-cogs"></i>&nbsp;',
@@ -117,20 +119,21 @@ function loadDataScript(scriptIndex){
 		script.src = DATA_FILES[scriptIndex];
 		script.type = "text/javascript";
 		
-		script.onreadystatechange = function(){
-			console.log("readyState");
-			if(this.readyState == "complete" || this.readyState == "loaded"){
-				initialize();
-			}
-		}
-		
 		if((scriptIndex+1) == DATA_FILES.length){
-			script.onload= function(){
+			script.onload = function(){
 				console.log("all data loaded");
 				initialize();
 			}
+			script.onerror = function(){
+				console.log("Could not load file >> "+DATA_FILES[scriptIndex]);
+				initialize();
+			}
 		}else{
-			script.onload= function(){
+			script.onload = function(){
+				loadDataScript(scriptIndex+1);
+			}
+			script.onerror = function(){
+				console.log("Could not load file >> "+DATA_FILES[scriptIndex]);
 				loadDataScript(scriptIndex+1);
 			}
 		}
@@ -500,6 +503,17 @@ function filterTable(searchField){
 
 }
 
+/*******************************************************************************
+ * Show Loading Animation
+ ******************************************************************************/
+function showLoader(isVisible){
+	
+	if(isVisible){
+		$("#loading").css("visibility", "visible");
+	}else{
+		$("#loading").css("visibility", "hidden");
+	}
+}
 /*******************************************************************************
  * ShowDetailsModal
  ******************************************************************************/
@@ -1396,6 +1410,8 @@ function drawScreenshots(){
 function draw(view){
 	
 	cleanup();
+	
+	window.setTimeout(showLoader(true), 1);
 
 	switch(view){
 		case "overview": 			drawOverviewPage(); break;
@@ -1413,5 +1429,6 @@ function draw(view){
 		case "screenshots": 		drawScreenshots(); break;
 	}
 	
+	showLoader(false);
 }
 

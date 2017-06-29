@@ -35,6 +35,14 @@ body{
 	border-bottom: 1px solid black;
 }
 
+#loading{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	visibility: hidden;
+}
+
 .screenshot{
     max-width: 100%;
     max-height: 100%;
