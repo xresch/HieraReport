@@ -10,9 +10,11 @@
  * GLOBALS
  *************************************************************************************/
 
+//declare with var and do not initialize, this will work when datafiles.js creates
+//this variable or not.
+var DATA_FILES;
 
 DATA = [];
-DATA_FILES;
 
 GLOBAL_COUNTER = 0;
 
@@ -96,6 +98,9 @@ function loadData(){
 	if(DATA_FILES == undefined){
 		DATA_FILES = ["./data.js"];
 	}
+	
+	//dedup the files so nothing is loaded twice
+	DATA_FILES = dedupArray(DATA_FILES);
 
 	loadDataScript(0);
 }
@@ -279,6 +284,22 @@ function initialWalkthrough(parent, currentItem){
 	
 }
 
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function dedupArray(arrayToDedup){
+	
+	var dedupped = [];
+	
+	for(var key in arrayToDedup){
+		
+		if(dedupped.indexOf(arrayToDedup[key]) == -1){
+			dedupped.push(arrayToDedup[key]);
+		}
+	}
+	
+	return dedupped;
+}
 /**************************************************************************************
  * 
  *************************************************************************************/
@@ -476,6 +497,7 @@ function getItemDetailsLink(item, showIndent){
 	}
 	
 	var link = $('<a role="button" '+pixelIndent+' href="javascript:void(0)" onclick="showDetailsModal(this)">'+getFullItemTitle(item)+'</a>');
+
 	link.data("item", item);
 	
 	return link;
@@ -1091,7 +1113,6 @@ function drawTestView(element){
 	
 }
 
-
 /**************************************************************************************
  * Prints an overview for a certain ItemType as a bootstrap column.
  * 
@@ -1147,7 +1168,6 @@ function drawPanelTree(){
 		printPanelTree(DATA[i], null);
 	}
 }
-
 
 
 /**************************************************************************************
@@ -1277,6 +1297,7 @@ function printTableRows(table, currentItem, printDetails){
 	var itemCell = $('<td>');
 	itemCell.append(getItemDetailsLink(currentItem, true));
 	
+	var rowString;
 	row.append('<td>'+TypeIcon[currentItem.type]+'</td>');
 	row.append(itemCell);
 	row.append('<td>'+currentItem.type+'</td>');
@@ -1284,15 +1305,16 @@ function printTableRows(table, currentItem, printDetails){
 	row.append('<td>'+currentItem.duration+'</td>');
 	
 	if(printDetails){
-		row.append('<td>'+currentItem.statusCount.All+'</td>');
-		row.append('<td>'+currentItem.statusCount.Success+'</td>');
-		row.append('<td>'+currentItem.statusCount.Skipped+'</td>');
-		row.append('<td>'+currentItem.statusCount.Fail+'</td>');
-		row.append('<td>'+currentItem.statusCount.Undefined+'</td>');
-		row.append('<td>'+currentItem.percentSuccess+'</td>');
-		row.append('<td>'+currentItem.percentSkipped+'</td>');
-		row.append('<td>'+currentItem.percentFail+'</td>');
-		row.append('<td>'+currentItem.percentUndefined+'</td>');
+		row.append(
+		'<td>'+currentItem.statusCount.All+'</td>'+
+		'<td>'+currentItem.statusCount.Success+'</td>'+
+		'<td>'+currentItem.statusCount.Skipped+'</td>'+
+		'<td>'+currentItem.statusCount.Fail+'</td>'+
+		'<td>'+currentItem.statusCount.Undefined+'</td>'+
+		'<td>'+currentItem.percentSuccess+'</td>'+
+		'<td>'+currentItem.percentSkipped+'</td>'+
+		'<td>'+currentItem.percentFail+'</td>'+
+		'<td>'+currentItem.percentUndefined+'</td>');
 	}
 	
 	if(currentItem.screenshotPath != null){
@@ -1411,24 +1433,28 @@ function draw(view){
 	
 	cleanup();
 	
-	window.setTimeout(showLoader(true), 1);
-
-	switch(view){
-		case "overview": 			drawOverviewPage(); break;
-		case "tree": 				drawPanelTree(); break;
-		case "status": 				drawStatusOverviewPage(); break;
-		
-		case "typebarchart": 		printStatusChart(); break;
-		case "statsStatusByType": 	drawStatistics(); break;
-
-		case "tableSimple": 		drawTable(DATA, false); break;
-		case "tableDetailed": 		drawTable(DATA, true); break;
-		case "csv": 				drawCSV(); break;
-		case "json": 				drawJSON(); break;
-		case "exceptions": 			drawExceptionsPage(); break;
-		case "screenshots": 		drawScreenshots(); break;
-	}
+	showLoader(true);
 	
-	showLoader(false);
+	window.setTimeout( 
+	function(){
+		switch(view){
+			case "overview": 			drawOverviewPage(); break;
+			case "tree": 				drawPanelTree(); break;
+			case "status": 				drawStatusOverviewPage(); break;
+			
+			case "typebarchart": 		printStatusChart(); break;
+			case "statsStatusByType": 	drawStatistics(); break;
+	
+			case "tableSimple": 		drawTable(DATA, false); break;
+			case "tableDetailed": 		drawTable(DATA, true); break;
+			case "csv": 				drawCSV(); break;
+			case "json": 				drawJSON(); break;
+			case "exceptions": 			drawExceptionsPage(); break;
+			case "screenshots": 		drawScreenshots(); break;
+		}
+		
+		showLoader(false);
+	}, 100);
+
 }
 
