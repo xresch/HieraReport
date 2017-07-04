@@ -50,6 +50,19 @@ body{
     display: block;
 }
 
+.flexWrapContainer{
+	display: flex; 	
+	flex-wrap: wrap; 
+	width: 100%;
+}
+
+.flexChart{
+	min-width: 300px;
+	max-height: 200px;
+	margin:30px;
+	
+
+}
 .report-carousel {
     background-color: #555;
 }

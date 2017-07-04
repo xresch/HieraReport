@@ -1,5 +1,13 @@
+TODO
+===========================
 - Duration overview
 - add timestamp to items
+
+
+
+DONE
+===========================
+
 - Management View
 	- 2 Pie Charts Suite / Tests
 	- 2 Tables 

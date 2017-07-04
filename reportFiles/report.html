@@ -33,7 +33,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">HieraReport</a>
+          <a class="navbar-brand" href="https://github.com/xresch/HieraReport">HieraReport</a>
         </div>
         
         <div id="navbar" class="collapse navbar-collapse">
@@ -45,10 +45,10 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 General <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                	 <li><a href="#" onclick="draw('overview')">Overview</a></li>
-                	 <li><a href="#" onclick="draw('status')">Status Overview</a></li>
-                	 <li><a href="#" onclick="draw('screenshots')">Screenshot Browser</a></li>
-                	 <li><a href="#" onclick="draw('tree')">Panel Tree</a></li>
+                	 <li><a href="#" onclick="draw({view: 'overview'})">Overview</a></li>
+                	 <li><a href="#" onclick="draw({view: 'status'})">Status Overview</a></li>
+                	 <li><a href="#" onclick="draw({view: 'screenshots'})">Screenshot Browser</a></li>
+                	 <li><a href="#" onclick="draw({view: 'tree'})">Panel Tree</a></li>
                 </ul>
             </li>
             
@@ -56,7 +56,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 Statistics <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                	<li><a href="#" onclick="draw('statsStatusByType')">Statistics: Status by Type</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsStatusByType'})">Statistics: Status by Type</a></li>
                 </ul>
             </li>
             
@@ -64,7 +64,10 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 Charts <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                	<li><a href="#" onclick="draw('typebarchart')">Chart: Status by Type</a></li>
+                	<li><a href="#" onclick="draw({view: 'typebarchart'})">Chart: Status by Type</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Suite})">Donut Charts &gt;&gt; Suite</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Class})">Donut Charts &gt;&gt; Class</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Test})">Donut Charts &gt;&gt; Test</a></li>
                 </ul>
             </li>
             
@@ -80,9 +83,9 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 	Tables <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                	<li><a href="#" onclick="draw('tableDetailed')">All Items(Detailed)</a></li>
-                	<li><a href="#" onclick="draw('tableSimple')">All Items(Simple)</a></li>
-            		<li><a href="#" onclick="draw('exceptions')">Exceptions</a></li>
+                	<li><a href="#" onclick="draw({view: 'tableDetailed'})">All Items(Detailed)</a></li>
+                	<li><a href="#" onclick="draw({view: 'tableSimple'})">All Items(Simple)</a></li>
+            		<li><a href="#" onclick="draw({view: 'exceptions'})">Exceptions</a></li>
                 </ul>
             </li>
             
@@ -90,8 +93,8 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 	Export <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="#" onclick="draw('csv')">CSV</a></li>
-            		<li><a href="#" onclick="draw('json')">JSON</a></li>
+                    <li><a href="#" onclick="draw({view: 'csv'})">CSV</a></li>
+            		<li><a href="#" onclick="draw({view: 'json'})">JSON</a></li>
                 </ul>
             </li>
 

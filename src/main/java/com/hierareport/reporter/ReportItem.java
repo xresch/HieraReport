@@ -1,6 +1,8 @@
 package com.hierareport.reporter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**************************************************************************************
  * The ReportItem contains all the information of the report in a hierachical tree
@@ -12,10 +14,12 @@ import java.util.ArrayList;
 
 public class ReportItem {
 
+	private transient static SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.SSS");
 	
 	private transient long startNanos;
 	private transient ReportItem parent = null;
 	
+	private String timestamp;
 	private int itemNumber;
 	private String title = "";
 	private String description = null;
@@ -42,9 +46,11 @@ public class ReportItem {
 	public ReportItem(ItemType type, String title){
 		this.type = type;
 		this.title = title;
+		this.timestamp = formatter.format(new Date());
 		this.startNanos = System.nanoTime();
 		calculateItemNumber();
 	}
+	
 	
 	public ReportItem endItem(){
 		
@@ -195,6 +201,17 @@ public class ReportItem {
 		return this;
 	}
 	
+	
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public ReportItem setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+		return this;
+	}
+
+
 	public String getScreenshotPath() {
 		return screenshotPath;
 	}

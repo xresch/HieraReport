@@ -188,7 +188,8 @@ function initialize(){
 		var currentTest = TYPE_STATS.Test.All[i];
 		
 		var listItem = $('<li>');
-		var link = $('<a href="#" onclick="drawTestView(this)">'+
+		//var link = $('<a href="#" onclick="drawTestView(this)">'+
+		var link = $('<a href="#" onclick="draw({view: \'test\', element: this})">'+
 				StatusIcon[currentTest.status]+
 				currentTest.title+
 				'</a>');
@@ -198,7 +199,7 @@ function initialize(){
 		testDropdown.append(listItem);
 	}
 	
-	draw("overview");
+	draw({view: "overview"});
 }
 
 /**************************************************************************************
@@ -593,9 +594,10 @@ function showDetailsModal(element){
 function appendItemChart(parent, item){
 
 	var chartWrapper = $('<div class="chartWrapper">');
-	$("#content").append(chartWrapper);
+	parent.append(chartWrapper);
 	chartWrapper.css('max-width', '500px');
-
+	chartWrapper.css('height', '200px');
+	
 	var chart = createStatusChart(chartWrapper,
 					"doughnut",
 					item.statusCount.Success, 
@@ -612,9 +614,8 @@ function createStatusChart(parent, type, success, skipped, fail, undef){
 	
 	var chartCanvas = $('<canvas id="itemChart" width="100%"></canvas>');
 	var chartCtx = chartCanvas.get(0).getContext("2d");
-	chartCtx.canvas.height = "300px";
-	
 	parent.append(chartCanvas);
+
 	
 	//------------------------------------
 	// Populate Data
@@ -644,7 +645,11 @@ function createStatusChart(parent, type, success, skipped, fail, undef){
 	// Draw Chart
 	new Chart(chartCtx, {
 	    type: type,
-	    data: data
+	    data: data,
+	    options: {
+	    	responsive: true,
+	    	maintainAspectRatio: false
+	    }
 		});
 	
 	return chartCanvas;
@@ -661,6 +666,7 @@ function printItemDetails(parent,item){
 	if(item.status != null){ 			parent.append('<p><strong>Type:&nbsp;</strong>'+item.type+'</p>');}
 	if(item.type != null){ 				parent.append('<p><strong>Status:&nbsp;</strong>'+item.status+'</p>');}
 	if(item.description != null){ 		parent.append('<p><strong>Description:&nbsp;</strong>'+item.description+'</p>');}
+	if(item.timestamp != null){ 		parent.append('<p><strong>Timestamp:&nbsp;</strong>'+item.timestamp+'</p>');}
 	if(item.duration != null){ 			parent.append('<p><strong>Duration:&nbsp;</strong>'+item.duration+' ms</p>');}
 	if(item.url != null){ 				parent.append('<p><strong>URL:&nbsp;</strong><a target="_blank" href="'+item.url+'">'+item.url+'</a></p>');}
 	if(item.exceptionMessage != null){ 	parent.append('<p><strong>Exception Message:&nbsp;</strong>'+item.exceptionMessage+'</p>');}
@@ -1020,6 +1026,47 @@ function printScreenshotsGallery(targetElement, currentItem, galleryDiv, indicat
 	}		
 }
 
+/**************************************************************************************
+ * Draws charts for the given type.
+ * 
+ * @param the args param has to contain a field "type".
+ * 
+ *************************************************************************************/
+function drawTypeCharts(args){
+	
+	var itemsArray = TYPE_STATS[args.type]["All"];
+	
+	var content = $('#content');
+	
+	content.append("<h3>Charts for type '"+args.type+"'</h3>");
+	content.append("<p>The charts show the status of the item and all its sub items. </p>");
+	
+	var chartContainer = $('<div class="flexWrapContainer">');
+	
+	content.append(chartContainer);
+	
+	for( var key in itemsArray){
+		
+		var currentItem = itemsArray[key];
+		var chartDiv = $('<div class="flexChart">');
+		
+		var title = $("<h4>");
+		title.append(StatusIcon[currentItem.status]);
+		title.append(getItemDetailsLink(currentItem, false));
+		chartDiv.append(title);
+		chartContainer.append(chartDiv);
+		
+		createStatusChart(chartDiv, 
+						"doughnut",
+						currentItem.statusCount.Success,
+						currentItem.statusCount.Skipped,
+						currentItem.statusCount.Fail,
+						currentItem.statusCount.Undefined);
+		
+		
+	}
+}
+
 
 /**************************************************************************************
  * 
@@ -1087,22 +1134,25 @@ function drawStatusOverviewPage(){
 
 /**************************************************************************************
  * drawTestView
+ * 
+ * @param args should contain an field "element" containing the dom element which has
+ * the test item attached 
  *************************************************************************************/
-function drawTestView(element){
-	var test = $(element).data("test");
+function drawTestView(args){
+	var testItem = $(args.element).data("test");
 	
 	cleanup();
 	content = $("#content");
 	
-	content.append('<h2>Test Details - '+test.title+'</h2>');
+	content.append('<h2>Test Details - '+testItem.title+'</h2>');
 	
-	appendItemChart(content, test);
+	appendItemChart(content, testItem);
 	
-	printItemDetails(content, test);
+	printItemDetails(content, testItem);
 	
-	drawTable(test, false);
+	drawTable(testItem, false);
 	
-	var children = test.children;
+	var children = testItem.children;
 	if(isArrayWithData(children)){
 		content.append('<h2>Children Tree</h2>')
 		var childrenCount = children.length;
@@ -1133,6 +1183,7 @@ function printItemOverview(parentRow, itemType, columnWidth){
 	var chartWrapper = $('<div class="chartWrapper">');
 	column.append(chartWrapper);
 	chartWrapper.css('width', '100%');
+	chartWrapper.css('height', '300px');
 	
 	var chart = createStatusChart(chartWrapper,
 		"doughnut",
@@ -1297,6 +1348,7 @@ function printTableRows(table, currentItem, printDetails){
 	var itemCell = $('<td>');
 	itemCell.append(getItemDetailsLink(currentItem, true));
 	
+	table.append(row);
 	var rowString;
 	row.append('<td>'+TypeIcon[currentItem.type]+'</td>');
 	row.append(itemCell);
@@ -1326,12 +1378,11 @@ function printTableRows(table, currentItem, printDetails){
 	if(currentItem.sourcePath != null){
 		row.append('<td><a target="_blank" href="'+currentItem.sourcePath+'"><i class="fa fa-code"></i></a></td>');
 	}else{
-	row.append('<td>&nbsp;</td>');
+		row.append('<td>&nbsp;</td>');
 	}
 	
 	row.append('<td><a target="_blank" href="'+currentItem.url+'"><i class="fa fa-link"></i></a></td>');
 	
-	table.append(row);
 	
 	if(isArrayWithData(currentItem.children)){
 		var childrenCount = currentItem.children.length;
@@ -1429,7 +1480,7 @@ function drawScreenshots(){
 /**************************************************************************************
  * Main Entry method
  *************************************************************************************/
-function draw(view){
+function draw(args){
 	
 	cleanup();
 	
@@ -1437,14 +1488,17 @@ function draw(view){
 	
 	window.setTimeout( 
 	function(){
-		switch(view){
+		switch(args.view){
 			case "overview": 			drawOverviewPage(); break;
 			case "tree": 				drawPanelTree(); break;
 			case "status": 				drawStatusOverviewPage(); break;
 			
 			case "typebarchart": 		printStatusChart(); break;
+			case "typeCharts": 			drawTypeCharts(args); break;
+			
 			case "statsStatusByType": 	drawStatistics(); break;
 	
+			case "test":		 		drawTestView(args); break;
 			case "tableSimple": 		drawTable(DATA, false); break;
 			case "tableDetailed": 		drawTable(DATA, true); break;
 			case "csv": 				drawCSV(); break;

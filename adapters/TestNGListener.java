@@ -3,7 +3,7 @@ package com.hierareport.reporter;
 import com.hierareport.reporter.ReportItem.ItemStatus;
 
 /**************************************************************************************
- * The TestNGListener that will be registered with TestNG's @Listeners annotation.
+ * A TestNGListener that will be registered with TestNG's @Listeners annotation.
  * This will add ReportItems to the Report for Suites, Classes and Tests.
  * 
  * © Reto Scheiwiller, 2017 - MIT License

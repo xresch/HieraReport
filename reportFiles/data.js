@@ -1,5 +1,6 @@
 DATA = DATA.concat([
-  {
+  {	
+	"timestamp": "2017-07-04T07:07:22.333",
     "itemNumber": 1,
     "title": "Default suite",
     "url": "about:blank",
@@ -8,6 +9,7 @@ DATA = DATA.concat([
     "status": "Fail",
     "children": [
       {
+    	"timestamp": "2017-07-04T07:07:22.333",
         "itemNumber": 3,
         "title": "com.reporter.example.TestPrototype",
         "url": "about:blank",
