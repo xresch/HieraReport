@@ -2,7 +2,7 @@ DATA = DATA.concat([
   {	
 	"timestamp": "2017-07-04T07:07:22.333",
     "itemNumber": 1,
-    "title": "Default suite",
+    "title": "Default_Suite_With_A_Quite_Long_Name",
     "url": "about:blank",
     "duration": 73767,
     "type": "Suite",

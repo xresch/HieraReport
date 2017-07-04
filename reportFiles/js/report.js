@@ -648,7 +648,10 @@ function createStatusChart(parent, type, success, skipped, fail, undef){
 	    data: data,
 	    options: {
 	    	responsive: true,
-	    	maintainAspectRatio: false
+	    	maintainAspectRatio: false,
+	    	legend: {
+	    		position: 'bottom'
+	    	},
 	    }
 		});
 	
@@ -752,14 +755,17 @@ function printStatusChart(){
 	var myChart = new Chart(chartCtx, {
 	    type: 'bar',
 	    responsive: true,
-	    maintainAspectRatio: true,
+	    maintainAspectRatio: false,
 	    options: {
+	    	legend: {
+	    		position: "bottom"
+	    	},
 	        scales:{
 	            xAxes: [{
 	                stacked: true
 	            }],
 	            yAxes: [{
-	            stacked: true
+	            	stacked: true
 	            }]
 	        }
 	    },
@@ -1042,7 +1048,6 @@ function drawTypeCharts(args){
 	content.append("<p>The charts show the status of the item and all its sub items. </p>");
 	
 	var chartContainer = $('<div class="flexWrapContainer">');
-	
 	content.append(chartContainer);
 	
 	for( var key in itemsArray){
@@ -1050,11 +1055,14 @@ function drawTypeCharts(args){
 		var currentItem = itemsArray[key];
 		var chartDiv = $('<div class="flexChart">');
 		
-		var title = $("<h4>");
+		var title = $('<h4 style="overflow-wrap: break-word; margin-top: 20px;">');
 		title.append(StatusIcon[currentItem.status]);
 		title.append(getItemDetailsLink(currentItem, false));
-		chartDiv.append(title);
-		chartContainer.append(chartDiv);
+		
+		var subContainer = $('<div style="margin: 20px; width: 300px;">');
+		subContainer.append(title);
+		subContainer.append(chartDiv);
+		chartContainer.append(subContainer);
 		
 		createStatusChart(chartDiv, 
 						"doughnut",
