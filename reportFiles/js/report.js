@@ -923,7 +923,6 @@ function printTable(parent, data, withFilter, isResponsive){
 	}
 	
 	for(var rowKey in data.rows ){
-		
 		var row = $('<tr>');
 		
 		for(var cellKey in data.rows[rowKey]){
@@ -932,6 +931,7 @@ function printTable(parent, data, withFilter, isResponsive){
 		table.append(row);
 	}
 }
+
 
 /**************************************************************************************
  * Print Screenshots for Test
@@ -1087,8 +1087,8 @@ function drawOverviewPage(){
 	var row = $('<div class="row">');
 	content.append(row);
 	
-	printItemOverview(row, ItemType.Suite, 6);
-	printItemOverview(row, ItemType.Test, 6);
+	printTypeOverview(row, ItemType.Suite, 6);
+	printTypeOverview(row, ItemType.Test, 6);
 }
 
 /**************************************************************************************
@@ -1175,7 +1175,7 @@ function drawTestView(args){
  * Prints an overview for a certain ItemType as a bootstrap column.
  * 
  *************************************************************************************/
-function printItemOverview(parentRow, itemType, columnWidth){
+function printTypeOverview(parentRow, itemType, columnWidth){
 	
 	var successCount = TYPE_STATS[itemType][ItemStatus.Success].length; 
 	var skippedCount = TYPE_STATS[itemType][ItemStatus.Skipped].length; 
@@ -1186,7 +1186,9 @@ function printItemOverview(parentRow, itemType, columnWidth){
 	var column = $('<div class="col-md-'+columnWidth+'">');
 	parentRow.append(column);
 		
-	column.append('<h3>'+itemType+' Pie Chart</h3>');
+	//---------------------------------
+	// Print Chart
+	column.append('<h3>'+itemType+' Chart</h3>');
 	
 	var chartWrapper = $('<div class="chartWrapper">');
 	column.append(chartWrapper);
@@ -1200,6 +1202,8 @@ function printItemOverview(parentRow, itemType, columnWidth){
 		failedCount,
 		undefCount);
 	
+	//---------------------------------
+	// Print Statistics
 	column.append('<h3>'+itemType+' Statistics</h3>');
 	
 	var tableData = {
@@ -1214,6 +1218,34 @@ function printItemOverview(parentRow, itemType, columnWidth){
 	};
 	
 	printTable(column, tableData, false, false );	
+	
+	//---------------------------------
+	// Print Type Status
+	column.append('<h3>'+itemType+' Status Overview</h3>');
+	printTypeStatusTable(column, itemType);
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function printTypeStatusTable(parent, itemType){
+	
+	var tableData = {
+			headers: ["", "Timestamp", "Title"],
+			rows: []
+		};
+			
+	for(var status in ItemStatus){
+		var items = TYPE_STATS[itemType][status];
+		
+		for(var key in items){
+			var item = items[key];
+			tableData.rows.push([StatusIcon[item.status],item.timestamp, item.title]);
+		}
+	}
+	
+	printTable(parent, tableData, false, false );
+
 }
 
 /**************************************************************************************
@@ -1498,8 +1530,9 @@ function draw(args){
 	function(){
 		switch(args.view){
 			case "overview": 			drawOverviewPage(); break;
-			case "tree": 				drawPanelTree(); break;
 			case "status": 				drawStatusOverviewPage(); break;
+			case "tree": 				drawPanelTree(); break;
+			case "screenshots": 		drawScreenshots(); break;
 			
 			case "typebarchart": 		printStatusChart(); break;
 			case "typeCharts": 			drawTypeCharts(args); break;
@@ -1507,12 +1540,14 @@ function draw(args){
 			case "statsStatusByType": 	drawStatistics(); break;
 	
 			case "test":		 		drawTestView(args); break;
+			
 			case "tableSimple": 		drawTable(DATA, false); break;
 			case "tableDetailed": 		drawTable(DATA, true); break;
+			case "exceptions": 			drawExceptionsPage(); break;
+			case "statusTable": 		printTypeStatusTable($("#content"), args.itemType); break;
+			
 			case "csv": 				drawCSV(); break;
 			case "json": 				drawJSON(); break;
-			case "exceptions": 			drawExceptionsPage(); break;
-			case "screenshots": 		drawScreenshots(); break;
 		}
 		
 		showLoader(false);

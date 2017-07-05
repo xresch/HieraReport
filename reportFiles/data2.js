@@ -1,5 +1,6 @@
 DATA = DATA.concat([
   {
+    "timestamp": "2017-07-04T07:07:22.333",
     "itemNumber": 1,
     "title": "Default suite",
     "url": "about:blank",
@@ -8,6 +9,7 @@ DATA = DATA.concat([
     "status": "Skipped",
     "children": [
       {
+        "timestamp": "2017-07-04T07:07:22.333",
         "itemNumber": 3,
         "title": "com.reporter.example.TestPrototype",
         "url": "about:blank",
@@ -16,6 +18,7 @@ DATA = DATA.concat([
         "status": "Fail",
         "children": [
           {
+            "timestamp": "2017-07-04T07:07:22.333",
             "itemNumber": 1,
             "title": "debug_xpath_test",
             "url": "about:blank",
@@ -24,6 +27,7 @@ DATA = DATA.concat([
             "status": "Success",
             "children": [
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 1,
                 "title": "Debug XPath",
                 "description": "",
@@ -33,6 +37,7 @@ DATA = DATA.concat([
                 "status": "Success",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 2,
                     "title": "DEBUG XPATH",
                     "description": "<br>Xpath to Debug: '//div[@class='not_there']'<br>debugXpath() Called by: 'com.reporter.example.TestPrototype.debug_xpath_test(TestPrototype.java:73)'<br>NO ELEMENTS FOUND FOR THE GIVEN XPATH!!!<br>",
@@ -46,6 +51,7 @@ DATA = DATA.concat([
             ]
           },
           {
+            "timestamp": "2017-07-04T07:07:22.333",
             "itemNumber": 2,
             "title": "mark_test_as_failed",
             "url": "about:blank",
@@ -56,6 +62,7 @@ DATA = DATA.concat([
             "status": "Fail",
             "children": [
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 1,
                 "title": "0100_AssertFalse(NOT ENDED PROPERLY)",
                 "duration": 20845,
@@ -63,6 +70,7 @@ DATA = DATA.concat([
                 "status": "Fail",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 2,
                     "title": "[Assert] is always failing",
                     "description": "<ul><li><strong>Message:&nbsp;</strong> is always failing</li><li><strong>Actual:&nbsp;</strong> [false]</li><li><strong>Expected:&nbsp;</strong> [true]</li></ul>",
@@ -81,6 +89,7 @@ DATA = DATA.concat([
             ]
           },
           {
+            "timestamp": "2017-07-04T07:07:22.333",
             "itemNumber": 3,
             "title": "mark_test_as_skipped",
             "url": "about:blank",
@@ -89,6 +98,7 @@ DATA = DATA.concat([
             "status": "Skipped",
             "children": [
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 1,
                 "title": "0100_AssertTrue",
                 "description": "",
@@ -98,6 +108,7 @@ DATA = DATA.concat([
                 "status": "Success",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 2,
                     "title": "[Assert] is always true",
                     "description": "<ul><li><strong>Message:&nbsp;</strong> is always true</li><li><strong>Actual:&nbsp;</strong> [true]</li><li><strong>Expected:&nbsp;</strong> [true]</li></ul>",
@@ -112,6 +123,7 @@ DATA = DATA.concat([
                 ]
               },
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 3,
                 "title": "0200_MarkSkipped(NOT ENDED PROPERLY)",
                 "duration": 5,
@@ -122,6 +134,7 @@ DATA = DATA.concat([
             ]
           },
           {
+            "timestamp": "2017-07-04T07:07:22.333",
             "itemNumber": 4,
             "title": "mark_test_as_success",
             "url": "about:blank",
@@ -130,6 +143,7 @@ DATA = DATA.concat([
             "status": "Success",
             "children": [
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 1,
                 "title": "0100_AssertTrue",
                 "description": "",
@@ -139,6 +153,7 @@ DATA = DATA.concat([
                 "status": "Success",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 2,
                     "title": "[Assert] is always true",
                     "description": "<ul><li><strong>Message:&nbsp;</strong> is always true</li><li><strong>Actual:&nbsp;</strong> [true]</li><li><strong>Expected:&nbsp;</strong> [true]</li></ul>",
@@ -155,6 +170,7 @@ DATA = DATA.concat([
             ]
           },
           {
+            "timestamp": "2017-07-04T07:07:22.333",
             "itemNumber": 5,
             "title": "report_assert_test",
             "url": "about:blank",
@@ -165,6 +181,7 @@ DATA = DATA.concat([
             "status": "Fail",
             "children": [
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 1,
                 "title": "Test Assert Success",
                 "description": "",
@@ -174,6 +191,7 @@ DATA = DATA.concat([
                 "status": "Success",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 2,
                     "title": "[Assert] it worked",
                     "description": "<ul><li><strong>Message:&nbsp;</strong> it worked</li><li><strong>Actual:&nbsp;</strong> [true]</li><li><strong>Expected:&nbsp;</strong> [true]</li></ul>",
@@ -188,6 +206,7 @@ DATA = DATA.concat([
                 ]
               },
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 3,
                 "title": "Test Assert Fails(NOT ENDED PROPERLY)",
                 "duration": 20813,
@@ -195,6 +214,7 @@ DATA = DATA.concat([
                 "status": "Fail",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 4,
                     "title": "[Assert] it failed good dammit",
                     "description": "<ul><li><strong>Message:&nbsp;</strong> it failed good dammit</li><li><strong>Actual:&nbsp;</strong> [false]</li><li><strong>Expected:&nbsp;</strong> [true]</li></ul>",
@@ -213,6 +233,7 @@ DATA = DATA.concat([
             ]
           },
           {
+            "timestamp": "2017-07-04T07:07:22.333",
             "itemNumber": 6,
             "title": "report_message_test",
             "url": "about:blank",
@@ -221,6 +242,7 @@ DATA = DATA.concat([
             "status": "Success",
             "children": [
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 1,
                 "title": "Test Info Message",
                 "description": "",
@@ -230,6 +252,7 @@ DATA = DATA.concat([
                 "status": "Success",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 2,
                     "title": "Not so important Information",
                     "description": "Strawberries are sweeter than carrots.",
@@ -241,6 +264,7 @@ DATA = DATA.concat([
                 ]
               },
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 3,
                 "title": "Test Warning Message",
                 "description": "",
@@ -250,6 +274,7 @@ DATA = DATA.concat([
                 "status": "Success",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 4,
                     "title": "ITSA WARNING",
                     "description": "Pay attention it might fail",
@@ -261,6 +286,7 @@ DATA = DATA.concat([
                 ]
               },
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 5,
                 "title": "Test Error Message",
                 "description": "",
@@ -270,6 +296,7 @@ DATA = DATA.concat([
                 "status": "Success",
                 "children": [
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 6,
                     "title": "Error Message Test",
                     "description": "Some error was thrown.",
@@ -279,6 +306,7 @@ DATA = DATA.concat([
                     "children": []
                   },
                   {
+                    "timestamp": "2017-07-04T07:07:22.333",
                     "itemNumber": 7,
                     "title": "Error Message Test with Exception",
                     "description": "Some error was thrown.",
@@ -294,6 +322,7 @@ DATA = DATA.concat([
             ]
           },
           {
+            "timestamp": "2017-07-04T07:07:22.333",
             "itemNumber": 7,
             "title": "report_wait_test",
             "url": "about:blank",
@@ -302,6 +331,7 @@ DATA = DATA.concat([
             "status": "Success",
             "children": [
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 1,
                 "title": "Test Wait Success",
                 "description": "",
@@ -312,6 +342,7 @@ DATA = DATA.concat([
                 "children": []
               },
               {
+                "timestamp": "2017-07-04T07:07:22.333",
                 "itemNumber": 2,
                 "title": "Test Wait Fail",
                 "description": "",

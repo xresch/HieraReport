@@ -64,10 +64,10 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 Charts <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                	<li><a href="#" onclick="draw({view: 'typebarchart'})">Chart: Status by Type</a></li>
-                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Suite})">Donut Charts &gt;&gt; Suite</a></li>
-                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Class})">Donut Charts &gt;&gt; Class</a></li>
-                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Test})">Donut Charts &gt;&gt; Test</a></li>
+                	<li><a href="#" onclick="draw({view: 'typebarchart'})">Bar >> Status by Type</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Suite})">Donut &gt;&gt; Suite</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Class})">Donut &gt;&gt; Class</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Test})">Donut &gt;&gt; Test</a></li>
                 </ul>
             </li>
             
@@ -86,6 +86,10 @@
                 	<li><a href="#" onclick="draw({view: 'tableDetailed'})">All Items(Detailed)</a></li>
                 	<li><a href="#" onclick="draw({view: 'tableSimple'})">All Items(Simple)</a></li>
             		<li><a href="#" onclick="draw({view: 'exceptions'})">Exceptions</a></li>
+                	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Suite})">Status &gt;&gt; Suite </a></li>
+                	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Class})">Status &gt;&gt; Class </a></li>
+                	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Test})">Status &gt;&gt; Test </a></li>
+                	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Assert})">Status &gt;&gt; Assert </a></li>
                 </ul>
             </li>
             
