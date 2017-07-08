@@ -1,13 +1,15 @@
 TODO
 ===========================
 - Duration overview
-- add timestamp to items
+- implement responsive in printTable()
+
 
 
 
 DONE
 ===========================
-
+- add Grouped Statistics
+- add timestamp to items
 - Management View
 	- 2 Pie Charts Suite / Tests
 	- 2 Tables 

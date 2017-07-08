@@ -7,6 +7,7 @@ DATA = DATA.concat([
     "duration": 73767,
     "type": "Suite",
     "status": "Fail",
+    "custom": {"myValue": "maKey"},
     "children": [
       {
     	"timestamp": "2017-07-04T07:07:22.333",
@@ -16,6 +17,7 @@ DATA = DATA.concat([
         "duration": 64759,
         "type": "Class",
         "status": "Fail",
+        "custom": {"myValue": "maKey"},
         "children": [
           {
             "timestamp": "2017-07-04T07:07:22.333",
@@ -25,6 +27,7 @@ DATA = DATA.concat([
             "duration": 20130,
             "type": "Test",
             "status": "Success",
+            "custom": {"myValue": "maKey"},
             "children": [
               {
                 "timestamp": "2017-07-04T07:07:22.333",
@@ -35,6 +38,7 @@ DATA = DATA.concat([
                 "duration": 20066,
                 "type": "Step",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -44,6 +48,7 @@ DATA = DATA.concat([
                     "duration": 0,
                     "type": "MessageInfo",
                     "status": "Undefined",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -60,6 +65,7 @@ DATA = DATA.concat([
             "duration": 20851,
             "type": "Test",
             "status": "Fail",
+            "custom": {"myValue": "maKey"},
             "children": [
               {
                 "timestamp": "2017-07-04T07:07:22.333",
@@ -68,6 +74,7 @@ DATA = DATA.concat([
                 "duration": 20845,
                 "type": "Step",
                 "status": "Fail",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -82,6 +89,7 @@ DATA = DATA.concat([
                     "duration": 20796,
                     "type": "Assert",
                     "status": "Fail",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -96,6 +104,7 @@ DATA = DATA.concat([
             "duration": 397,
             "type": "Test",
             "status": "Skipped",
+            "custom": {"myValue": "maKey"},
             "children": [
               {
                 "timestamp": "2017-07-04T07:07:22.333",
@@ -106,6 +115,7 @@ DATA = DATA.concat([
                 "duration": 379,
                 "type": "Step",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -118,6 +128,7 @@ DATA = DATA.concat([
                     "duration": 372,
                     "type": "Assert",
                     "status": "Success",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -129,6 +140,7 @@ DATA = DATA.concat([
                 "duration": 5,
                 "type": "Step",
                 "status": "Fail",
+                "custom": {"myValue": "maKey"},
                 "children": []
               }
             ]
@@ -141,6 +153,7 @@ DATA = DATA.concat([
             "duration": 452,
             "type": "Test",
             "status": "Success",
+            "custom": {"myValue": "maKey"},
             "children": [
               {
                 "timestamp": "2017-07-04T07:07:22.333",
@@ -151,6 +164,7 @@ DATA = DATA.concat([
                 "duration": 401,
                 "type": "Step",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -163,6 +177,7 @@ DATA = DATA.concat([
                     "duration": 394,
                     "type": "Assert",
                     "status": "Success",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -179,6 +194,7 @@ DATA = DATA.concat([
             "duration": 21207,
             "type": "Test",
             "status": "Fail",
+            "custom": {"myValue": "maKey"},
             "children": [
               {
                 "timestamp": "2017-07-04T07:07:22.333",
@@ -189,6 +205,7 @@ DATA = DATA.concat([
                 "duration": 379,
                 "type": "Step",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -201,6 +218,7 @@ DATA = DATA.concat([
                     "duration": 373,
                     "type": "Assert",
                     "status": "Success",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -212,6 +230,7 @@ DATA = DATA.concat([
                 "duration": 20813,
                 "type": "Step",
                 "status": "Fail",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -226,6 +245,7 @@ DATA = DATA.concat([
                     "duration": 20759,
                     "type": "Assert",
                     "status": "Fail",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -240,6 +260,7 @@ DATA = DATA.concat([
             "duration": 57,
             "type": "Test",
             "status": "Success",
+            "custom": {"myValue": "maKey"},
             "children": [
               {
                 "timestamp": "2017-07-04T07:07:22.333",
@@ -250,6 +271,7 @@ DATA = DATA.concat([
                 "duration": 0,
                 "type": "Step",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -259,6 +281,7 @@ DATA = DATA.concat([
                     "duration": 0,
                     "type": "MessageInfo",
                     "status": "Undefined",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -272,6 +295,7 @@ DATA = DATA.concat([
                 "duration": 0,
                 "type": "Step",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -281,6 +305,7 @@ DATA = DATA.concat([
                     "duration": 0,
                     "type": "MessageWarn",
                     "status": "Undefined",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -294,6 +319,7 @@ DATA = DATA.concat([
                 "duration": 0,
                 "type": "Step",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": [
                   {
                     "timestamp": "2017-07-04T07:07:22.333",
@@ -303,6 +329,7 @@ DATA = DATA.concat([
                     "duration": 0,
                     "type": "MessageError",
                     "status": "Undefined",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   },
                   {
@@ -315,6 +342,7 @@ DATA = DATA.concat([
                     "duration": 0,
                     "type": "MessageError",
                     "status": "Success",
+                    "custom": {"myValue": "maKey"},
                     "children": []
                   }
                 ]
@@ -329,6 +357,7 @@ DATA = DATA.concat([
             "duration": 825,
             "type": "Test",
             "status": "Success",
+            "custom": {"myValue": "maKey"},
             "children": [
               {
                 "timestamp": "2017-07-04T07:07:22.333",
@@ -339,6 +368,7 @@ DATA = DATA.concat([
                 "duration": 332,
                 "type": "Wait",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": []
               },
               {
@@ -350,6 +380,7 @@ DATA = DATA.concat([
                 "duration": 444,
                 "type": "Wait",
                 "status": "Success",
+                "custom": {"myValue": "maKey"},
                 "children": []
               }
             ]
@@ -366,6 +397,7 @@ DATA = DATA.concat([
 	    "duration": 73767,
 	    "type": "Suite",
 	    "status": "Success",
+	    "custom": {"myValue": "maKey"},
 	    "children": [
 	      {
 	        "timestamp": "2017-07-04T07:07:22.333",
@@ -375,6 +407,7 @@ DATA = DATA.concat([
 	        "duration": 64759,
 	        "type": "Class",
 	        "status": "Fail",
+	        "custom": {"myValue": "maKey"},
 	        "children": [
 	          {
 	            "timestamp": "2017-07-04T07:07:22.333",
@@ -384,6 +417,7 @@ DATA = DATA.concat([
 	            "duration": 20130,
 	            "type": "Test",
 	            "status": "Success",
+	            "custom": {"myValue": "maKey"},
 	            "children": []
 	          }
 	        ]

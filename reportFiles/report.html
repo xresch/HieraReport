@@ -57,6 +57,21 @@
                 Statistics <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                 	<li><a href="#" onclick="draw({view: 'statsStatusByType'})">Statistics: Status by Type</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: 'All', fieldName: 'title'})">Group by Title &gt;&gt; All</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Suite, fieldName: 'title'})">Group by Title &gt;&gt; Suite</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Class, fieldName: 'title'})">Group by Title &gt;&gt; Class</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Test, fieldName: 'title'})">Group by Title &gt;&gt; Test</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Step, fieldName: 'title'})">Group by Title &gt;&gt; Step</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Assert, fieldName: 'title'})">Group by Title &gt;&gt; Assert</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Wait, fieldName: 'title'})">Group by Title &gt;&gt; Wait</a></li>
+                	
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: 'All', fieldName: 'exceptionMessage'})">Group by Exception Message &gt;&gt; All</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Suite, fieldName: 'exceptionMessage'})">Group by Exception Message &gt;&gt; Suite</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Class, fieldName: 'exceptionMessage'})">Group by Exception Message &gt;&gt; Class</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Test, fieldName: 'exceptionMessage'})">Group by Exception Message &gt;&gt; Test</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Step, fieldName: 'exceptionMessage'})">Group by Exception Message &gt;&gt; Step</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Assert, fieldName: 'exceptionMessage'})">Group by Exception Message &gt;&gt; Assert</a></li>
+                	<li><a href="#" onclick="draw({view: 'statsByField', itemType: ItemType.Wait, fieldName: 'exceptionMessage'})">Group by Exception Message &gt;&gt; Wait</a></li>
                 </ul>
             </li>
             
@@ -65,9 +80,12 @@
                 Charts <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                 	<li><a href="#" onclick="draw({view: 'typebarchart'})">Bar >> Status by Type</a></li>
-                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Suite})">Donut &gt;&gt; Suite</a></li>
-                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Class})">Donut &gt;&gt; Class</a></li>
-                	<li><a href="#" onclick="draw({view: 'typeCharts', type: ItemType.Test})">Donut &gt;&gt; Test</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', chartType: 'doughnut', type: ItemType.Suite})">Donut &gt;&gt; Suite</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', chartType: 'doughnut', type: ItemType.Class})">Donut &gt;&gt; Class</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', chartType: 'doughnut', type: ItemType.Test})">Donut &gt;&gt; Test</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', chartType: 'bar', type: ItemType.Suite})">Bar &gt;&gt; Suite</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', chartType: 'bar', type: ItemType.Class})">Bar &gt;&gt; Class</a></li>
+                	<li><a href="#" onclick="draw({view: 'typeCharts', chartType: 'bar', type: ItemType.Test})">Bar &gt;&gt; Test</a></li>
                 </ul>
             </li>
             
@@ -89,7 +107,9 @@
                 	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Suite})">Status &gt;&gt; Suite </a></li>
                 	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Class})">Status &gt;&gt; Class </a></li>
                 	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Test})">Status &gt;&gt; Test </a></li>
+                	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Step})">Status &gt;&gt; Step </a></li>
                 	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Assert})">Status &gt;&gt; Assert </a></li>
+                	<li><a href="#" onclick="draw({view: 'statusTable', itemType: ItemType.Wait})">Status &gt;&gt; Wait </a></li>
                 </ul>
             </li>
             

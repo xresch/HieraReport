@@ -16,6 +16,8 @@ var DATA_FILES;
 
 DATA = [];
 
+ALL_ITEMS_FLAT = [];
+
 GLOBAL_COUNTER = 0;
 
 TYPE_STATS = {
@@ -246,6 +248,8 @@ function initialWalkthrough(parent, currentItem){
 	//------------------------------------
 	// Calculate Statistics per Item
 	if(isObjectWithData(currentItem)){
+		
+		ALL_ITEMS_FLAT.push(currentItem);
 		
 		TYPE_STATS[currentItem.type].All.push(currentItem);	
 		TYPE_STATS[currentItem.type][currentItem.status].push(currentItem);
@@ -658,6 +662,91 @@ function createStatusChart(parent, type, success, skipped, fail, undef){
 	return chartCanvas;
 }
 
+
+/**************************************************************************************
+ * Calculates the statistics grouped by the given field.
+ * The first call to this method has to set 'null' for the parameter statistics.
+ * Does not consider any child items.
+ *  
+ *************************************************************************************/
+function calculateStatisticsByField(currentItem, fieldName, statistics){
+
+	var isRoot = false;
+	if(statistics == null){
+		statistics = {};
+		isRoot = true;
+	}
+	
+	if(typeof currentItem[fieldName] != "undefined"){
+		
+		var groupValue = currentItem[fieldName];
+		
+		if(typeof statistics[groupValue] == "undefined"){
+			statistics[groupValue] = {
+				Count: 0,
+				Success: 0,
+				Skipped: 0,
+				Fail: 0,
+				Undefined: 0,
+				Exceptions: 0,
+				"Duration(sum)": "N/A",
+				"Duration(min)": "N/A",
+				"Duration(avg)": "N/A",
+				"Duration(max)": "N/A",
+			}
+
+		}
+		
+		currentStats = statistics[groupValue];
+		
+		currentStats.Count++;
+		currentStats[currentItem.status]++;
+		
+		if(currentItem.exceptionMessage != null
+		|| currentItem.exceptionStacktrace != null){
+			currentStats.Exceptions++;
+		}
+		
+		if(!isNaN(currentItem.duration)){
+			
+			if(currentStats["Duration(sum)"] == "N/A") currentStats["Duration(sum)"] = 0;
+			if(currentStats["Duration(min)"] == "N/A") currentStats["Duration(min)"] = 0;
+			if(currentStats["Duration(avg)"] == "N/A") currentStats["Duration(avg)"] = currentItem.duration;
+			if(currentStats["Duration(max)"] == "N/A") currentStats["Duration(max)"] = 0;
+			
+			currentStats["Duration(sum)"] += currentItem.duration;
+			
+			if( currentItem.duration < currentStats["Duration(min)"] ){
+				currentStats["Duration(min)"] = currentItem.duration;
+			}
+			
+			if( currentItem.duration > currentStats["Duration(max)"] ){
+				currentStats["Duration(max)"] = currentItem.duration;
+			}
+			
+		}
+		
+	}
+
+//	if(isArrayWithData(currentItem.children)){
+//		var children = currentItem.children;
+//		var childrenCount = currentItem.children.length;
+//		
+//		for(var i = 0; i < childrenCount; i++){
+//			calculateStatisticsByField(children[i], fieldName, statistics);
+//		}
+//	}
+	
+	//-------------------------------
+	// Calculate Averages
+	for(var key in statistics){
+		var stats = statistics[key];
+		stats["Duration(avg)"] = stats["Duration(sum)"] / stats.Count;
+	}
+	
+	return statistics;
+}
+
 /**************************************************************************************
  * 
  *************************************************************************************/
@@ -669,9 +758,18 @@ function printItemDetails(parent,item){
 	if(item.status != null){ 			parent.append('<p><strong>Type:&nbsp;</strong>'+item.type+'</p>');}
 	if(item.type != null){ 				parent.append('<p><strong>Status:&nbsp;</strong>'+item.status+'</p>');}
 	if(item.description != null){ 		parent.append('<p><strong>Description:&nbsp;</strong>'+item.description+'</p>');}
+	if(item.url != null){ 				parent.append('<p><strong>URL:&nbsp;</strong><a target="_blank" href="'+item.url+'">'+item.url+'</a></p>');}
+	if(item.custom != null){ 			
+		parent.append('<p><strong>Custom Values:</strong></p>');
+		var list = $('<ul>');
+		parent.append(list);
+		for(var key in item.custom){
+			list.append('<li><strong>'+key+':&nbsp;</strong>'+item.custom[key]+'</li>');
+		}
+	}
+
 	if(item.timestamp != null){ 		parent.append('<p><strong>Timestamp:&nbsp;</strong>'+item.timestamp+'</p>');}
 	if(item.duration != null){ 			parent.append('<p><strong>Duration:&nbsp;</strong>'+item.duration+' ms</p>');}
-	if(item.url != null){ 				parent.append('<p><strong>URL:&nbsp;</strong><a target="_blank" href="'+item.url+'">'+item.url+'</a></p>');}
 	if(item.exceptionMessage != null){ 	parent.append('<p><strong>Exception Message:&nbsp;</strong>'+item.exceptionMessage+'</p>');}
 	if(item.exceptionStacktrace != null){parent.append('<p><strong>Exception Stacktrace:&nbsp;</strong><br>'+item.exceptionStacktrace+'</p>');}
 	
@@ -833,6 +931,46 @@ function printCSVRows(parent, currentItem){
 	}	
 }
 
+/**************************************************************************************
+ * Print Statistics by Type And Field
+ *  
+ *************************************************************************************/
+function printStatisticsByTypeAndField(parent, type, fieldName){
+	
+	var statistics = null;
+	var items;
+	
+	if(type == 'All'){
+		
+		items = ALL_ITEMS_FLAT;
+	}else{
+		items = TYPE_STATS[type]["All"];
+	}
+	
+	
+	for(var key in items){
+		statistics = calculateStatisticsByField(items[key], fieldName, statistics);
+	}
+	
+	var tableData = {
+			headers: ["Group by Field '"+fieldName+"'"],
+			rows: []
+		};
+	
+	var headersInitialized = false;
+	
+	for(var key in statistics){
+		
+		if(!headersInitialized){
+			tableData.headers = tableData.headers.concat(Object.keys(statistics[key]));
+			headersInitialized = true;
+		}
+		
+		tableData.rows.push([key].concat(Object.values(statistics[key])));
+	}
+
+	printTable(parent, tableData, true, false);
+}
 /**************************************************************************************
  * 
  *************************************************************************************/
@@ -1065,7 +1203,7 @@ function drawTypeCharts(args){
 		chartContainer.append(subContainer);
 		
 		createStatusChart(chartDiv, 
-						"doughnut",
+						args.chartType,
 						currentItem.statusCount.Success,
 						currentItem.statusCount.Skipped,
 						currentItem.statusCount.Fail,
@@ -1143,7 +1281,7 @@ function drawStatusOverviewPage(){
 /**************************************************************************************
  * drawTestView
  * 
- * @param args should contain an field "element" containing the dom element which has
+ * @param args should contain a field "element" containing the dom element which has
  * the test item attached 
  *************************************************************************************/
 function drawTestView(args){
@@ -1538,6 +1676,7 @@ function draw(args){
 			case "typeCharts": 			drawTypeCharts(args); break;
 			
 			case "statsStatusByType": 	drawStatistics(); break;
+			case "statsByField": 		printStatisticsByTypeAndField($("#content"), args.itemType, args.fieldName); break;
 	
 			case "test":		 		drawTestView(args); break;
 			
