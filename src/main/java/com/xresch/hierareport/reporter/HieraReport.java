@@ -24,7 +24,11 @@ import com.xresch.hierareport.reporter.HieraReportItem.ItemType;
 
 public class HieraReport {
 	
-	private static String REPORT_BASE_DIR = "./target/hieraReport";
+	private static String CONFIG_REPORT_BASE_DIR = "./target/hieraReport";
+	private static boolean CONFIG_CLOSE_CHECK_SUITE = true;
+	private static boolean CONFIG_CLOSE_CHECK_CLASS = true;
+	private static boolean CONFIG_CLOSE_CHECK_TEST = true;
+
 	
 	private static int testNumber = 1;
 
@@ -51,23 +55,36 @@ public class HieraReport {
 	protected static void initialize(){
 		initializeThreadLocals();
 		
-		logger.info("Cleanup report directory: "+REPORT_BASE_DIR);
-    	HieraReportUtils.deleteRecursively(new File(REPORT_BASE_DIR));
+		logger.info("Cleanup report directory: "+CONFIG_REPORT_BASE_DIR);
+    	HieraReportUtils.deleteRecursively(new File(CONFIG_REPORT_BASE_DIR));
     	//Utils.copyRecursively(RESOURCE_BASE_DIR, REPORT_BASE_DIR);
     	    	
     	InputStream in = HieraReport.class.getClassLoader().getResourceAsStream("com/xresch/hierareport/reporter/files/reportFiles.zip.txt");
     	ZipInputStream zipStream = new ZipInputStream(in);
-    	HieraReportUtils.extractZipFile(zipStream, REPORT_BASE_DIR);
+    	HieraReportUtils.extractZipFile(zipStream, CONFIG_REPORT_BASE_DIR);
     	
 	} 
 	
 	/***********************************************************************************
 	 * Set the directory of the report.
-	 * Do not call this method after your test has already started.
 	 ***********************************************************************************/
-	public static void setReportDirectory(String path) {
-		REPORT_BASE_DIR = path;
-	}
+	public static void configReportDirectory(String path) {  CONFIG_REPORT_BASE_DIR = path; }
+	
+	/***********************************************************************************
+	 * Set if proper closing of Suites should be checked.
+	 ***********************************************************************************/
+	public static void configCloseCheckSuite(boolean doCheck) {  CONFIG_CLOSE_CHECK_SUITE = doCheck; }
+	
+	/***********************************************************************************
+	 * Set if proper closing of Suites should be checked.
+	 ***********************************************************************************/
+	public static void configCloseCheckClass(boolean doCheck) {  CONFIG_CLOSE_CHECK_CLASS = doCheck; }
+	
+	/***********************************************************************************
+	 * Set if proper closing of Suites should be checked.
+	 ***********************************************************************************/
+	public static void configCloseCheckTest(boolean doCheck) {  CONFIG_CLOSE_CHECK_TEST = doCheck; }
+	
 	/***********************************************************************************
 	 * Set the WebDriver.
 	 ***********************************************************************************/
@@ -122,7 +139,7 @@ public class HieraReport {
 	 ***********************************************************************************/
 	protected static String getTestDirectory(){
 		String testfolderName = currentTest.get().getFixSizeNumber() + "_" + currentTest.get().getTitle();
-		return REPORT_BASE_DIR+"/"+testfolderName.replaceAll("[^a-zA-Z0-9]", "_")+"/";
+		return CONFIG_REPORT_BASE_DIR+"/"+testfolderName.replaceAll("[^a-zA-Z0-9]", "_")+"/";
 	}
 	
 	/***********************************************************************************
@@ -339,10 +356,10 @@ public class HieraReport {
 		if(!openItems().isEmpty()
 		&& openItems().containsKey(title)){
 			HieraReportItem itemToEnd = openItems().get(title);
-			
+			itemToEnd.endItem();
 			try{
 				if(driver.get() != null){
-					itemToEnd.endItem().setUrl(driver.get().getCurrentUrl());
+					itemToEnd.setUrl(driver.get().getCurrentUrl());
 				}
 			}catch(Exception e){
 				//Ignore exceptions like SessionNotFoundException
@@ -399,7 +416,7 @@ public class HieraReport {
 	
 	        	String filepath = directory+"/"+filename;
 	        	HieraReportUtils.writeStringToFile(directory, filename, screenshot);
-				getActiveItem().setScreenshotPath(filepath.replace(REPORT_BASE_DIR, "./"));
+				getActiveItem().setScreenshotPath(filepath.replace(CONFIG_REPORT_BASE_DIR, "./"));
 			
 			}catch(Exception e){
 				logger.severe("An exception occured on taking screenshot");
@@ -436,7 +453,7 @@ public class HieraReport {
 		        byte[] screenshotBytes = ((TakesScreenshot)localDriver).getScreenshotAs(OutputType.BYTES);
 		        FileUtils.writeByteArrayToFile(new File(filepath), screenshotBytes);;
 		        
-				getActiveItem().setScreenshotPath(filepath.replace(REPORT_BASE_DIR, "./"));
+				getActiveItem().setScreenshotPath(filepath.replace(CONFIG_REPORT_BASE_DIR, "./"));
 			
 			}catch(Exception e){
 				logger.warning("An exception occured on taking screenshot:"+e.getMessage());
@@ -469,7 +486,7 @@ public class HieraReport {
 	        
 	    	String filepath = directory+"/"+filename;
 	    	HieraReportUtils.writeStringToFile(directory, filename, source);
-			getActiveItem().setSourcePath(filepath.replace(REPORT_BASE_DIR, "./"));
+			getActiveItem().setSourcePath(filepath.replace(CONFIG_REPORT_BASE_DIR, "./"));
 			
 		}catch(Exception e){
 			logger.severe("An exception occured on saving the HTML source: "+e.getMessage());
@@ -522,13 +539,17 @@ public class HieraReport {
 	protected static void createFinalReport(){
 		
 		for(HieraReportItem item : openItems().values()){
+			if(!CONFIG_CLOSE_CHECK_SUITE && item.getType() == ItemType.Suite) { continue ;}
+			if(!CONFIG_CLOSE_CHECK_CLASS && item.getType() == ItemType.Class) { continue ;}
+			if(!CONFIG_CLOSE_CHECK_TEST && item.getType() == ItemType.Test) { continue ;}
+			
 			logger.warning("Item was not ended properly: '"+item.getTitle()+"'");
 			item.endItem().setTitle(item.getTitle()+"(NOT ENDED PROPERLY)");
 		}
 		String json = HieraReportUtils.generateJSON(rootItem.get().getChildren());
 
 		String javascript = "DATA = DATA.concat(\n"+json+"\n);";
-		HieraReportUtils.writeStringToFile(REPORT_BASE_DIR, "data.js", javascript);
+		HieraReportUtils.writeStringToFile(CONFIG_REPORT_BASE_DIR, "data.js", javascript);
 	}
 	
 }

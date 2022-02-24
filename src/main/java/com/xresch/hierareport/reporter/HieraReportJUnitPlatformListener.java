@@ -13,7 +13,7 @@ public class HieraReportJUnitPlatformListener implements TestExecutionListener {
 
 	// Checkout this: https://www.swtestacademy.com/reporting-test-results-tesults-junit5-jupiter/
 	
-	
+	TestPlan currentTestplan;
 	/**
 	 * Called when the execution of the {@link TestPlan} has started,
 	 * <em>before</em> any test has been executed.
@@ -21,6 +21,9 @@ public class HieraReportJUnitPlatformListener implements TestExecutionListener {
 	 * @param testPlan describes the tree of tests about to be executed
 	 */
 	public void testPlanExecutionStarted(TestPlan testplan) {
+		currentTestplan = testplan;
+		HieraReport.configCloseCheckSuite(false);
+		HieraReport.configCloseCheckClass(false);
 		HieraReport.initialize();
 	}
 
@@ -156,10 +159,11 @@ public class HieraReportJUnitPlatformListener implements TestExecutionListener {
 			return;
 		}
 		
+		currentTestplan.getChildren(testIdentifier.getParentId().get());
+		
 		System.out.println("================ END =====================");
 		ResolvedIdentifiers resolved = resolveIdentifiers(testIdentifier);
 		
-
 		if (resolved.methodName != null) {
 			//---------------------------------------
 			// End Test
@@ -171,10 +175,10 @@ public class HieraReportJUnitPlatformListener implements TestExecutionListener {
 				break;
 			
 			}
-		    
-		    
+
 		    return;
 		}else if(resolved.className != null) {
+			
 			HieraReport.endCurrentClass();
 			return;
 		}
