@@ -1,4 +1,4 @@
-package com.hierareport.reporter;
+package com.xresch.hierareport.reporter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,15 +9,15 @@ import java.util.Date;
  * structure. It will be serialized to json so it can be loaded and displayed by the 
  * browser part of HieraReport.
  * 
- * © Reto Scheiwiller, 2017 - MIT License
+ * Copyright Reto Scheiwiller, 2017 - MIT License
  **************************************************************************************/
 
-public class ReportItem {
+public class HieraReportItem {
 
 	private transient static SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.SSS");
 	
 	private transient long startNanos;
-	private transient ReportItem parent = null;
+	private transient HieraReportItem parent = null;
 	
 	private String timestamp;
 	private int itemNumber;
@@ -31,10 +31,10 @@ public class ReportItem {
 	private long duration = 0;
 	private ItemType type = null;
 	private ItemStatus status = ItemStatus.Success;
-	private ArrayList<ReportItem> children = new ArrayList<ReportItem>();
+	private ArrayList<HieraReportItem> children = new ArrayList<HieraReportItem>();
 	
 	public enum ItemType {Suite, Class, Test, Step, MessageInfo, MessageWarn, MessageError, Wait, Assert }
-	public enum ItemStatus { Undefined, Success, Fail, Skipped }
+	public enum ItemStatus { Undefined, Success, Fail, Skipped, Aborted }
 	
 	private static ThreadLocal<Integer> itemCount = new ThreadLocal<Integer>();
 	private static Object itemCountLock = new Object();
@@ -43,7 +43,7 @@ public class ReportItem {
 		itemCount.set(1);
 	}
 	
-	public ReportItem(ItemType type, String title){
+	public HieraReportItem(ItemType type, String title){
 		this.type = type;
 		this.title = title;
 		this.timestamp = formatter.format(new Date());
@@ -52,7 +52,7 @@ public class ReportItem {
 	}
 	
 	
-	public ReportItem endItem(){
+	public HieraReportItem endItem(){
 		
 		long endNanos = System.nanoTime();
 		duration = (endNanos - startNanos) / 1000000;
@@ -93,7 +93,7 @@ public class ReportItem {
 		return itemNumber;
 	}
 	
-	public ReportItem setItemNumber(int stepNumber) {
+	public HieraReportItem setItemNumber(int stepNumber) {
 		this.itemNumber = stepNumber;
 		return this;
 	}
@@ -102,7 +102,7 @@ public class ReportItem {
 		return duration;
 	}
 
-	public ReportItem setDuration(long duration) {
+	public HieraReportItem setDuration(long duration) {
 		this.duration = duration;
 		return this;
 	}
@@ -111,7 +111,7 @@ public class ReportItem {
 		return title;
 	}
 
-	public ReportItem setTitle(String title) {
+	public HieraReportItem setTitle(String title) {
 		this.title =  escapeIt(title);
 		return this;
 	}
@@ -120,7 +120,7 @@ public class ReportItem {
 		return description;
 	}
 
-	public ReportItem setDescription(String description) {
+	public HieraReportItem setDescription(String description) {
 		this.description =  escapeIt(description);
 		return this;
 	}
@@ -146,12 +146,12 @@ public class ReportItem {
 		return exceptionMessage;
 	}
 
-	public ReportItem setExceptionMessage(String exceptionMessage) {
+	public HieraReportItem setExceptionMessage(String exceptionMessage) {
 		this.exceptionMessage =  escapeIt(exceptionMessage);
 		return this;
 	}
 	
-	public ReportItem setException(Throwable e) {
+	public HieraReportItem setException(Throwable e) {
 		
 		StringBuffer stacktrace = new StringBuffer(); 
 		for(StackTraceElement element : e.getStackTrace()){
@@ -168,7 +168,7 @@ public class ReportItem {
 		return type;
 	}
 
-	public ReportItem setType(ItemType type) {
+	public HieraReportItem setType(ItemType type) {
 		this.type = type;
 		return this;
 	}
@@ -179,18 +179,18 @@ public class ReportItem {
 
 	/***************************************************************************
 	 * Set the status of this item.
-	 * If the status is set to Fail or Skipped propagate it up the whole tree.
+	 * If the status is set to Fail, Aborted Skipped propagate it up the whole tree.
 	 *  
 	 * @param status
 	 ***************************************************************************/
-	public ReportItem setStatus(ItemStatus status) {
+	public HieraReportItem setStatus(ItemStatus status) {
 		
 		this.status = status;
 		
 		if(parent != null){
 			
 			if(parent.status != ItemStatus.Fail 
-			   && (status == ItemStatus.Fail || status == ItemStatus.Skipped) ){ 
+			   && (status == ItemStatus.Fail || status == ItemStatus.Aborted || status == ItemStatus.Skipped) ){ 
 				
 				 parent.setStatus(status);
 				 return this;
@@ -206,7 +206,7 @@ public class ReportItem {
 		return timestamp;
 	}
 
-	public ReportItem setTimestamp(String timestamp) {
+	public HieraReportItem setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 		return this;
 	}
@@ -228,7 +228,7 @@ public class ReportItem {
 		this.sourcePath = escapeIt(sourcePath);
 	}
 	
-	public ReportItem getParent() {
+	public HieraReportItem getParent() {
 		return parent;
 	}
 	
@@ -240,7 +240,7 @@ public class ReportItem {
 	 * @param type
 	 * @return
 	 ***********************************************************************************/
-	public static ReportItem getFirstElementWithType(ReportItem item, ItemType type) {
+	public static HieraReportItem getFirstElementWithType(HieraReportItem item, ItemType type) {
 		
 		if(item.getType().equals(type)){
 			return item;
@@ -248,27 +248,27 @@ public class ReportItem {
 			if(item.getParent() == null){
 				return null;
 			}else{
-				return ReportItem.getFirstElementWithType(item.getParent(), type);
+				return HieraReportItem.getFirstElementWithType(item.getParent(), type);
 			}
 		}
 
 	}
 
-	public void setParent(ReportItem parent) {
+	public void setParent(HieraReportItem parent) {
 		this.parent = parent;
 		parent.appendChild(this);
 	}
 
-	public ArrayList<ReportItem> getChildren() {
+	public ArrayList<HieraReportItem> getChildren() {
 		return children;
 	}
 
-	public ReportItem setChildren(ArrayList<ReportItem> children) {
+	public HieraReportItem setChildren(ArrayList<HieraReportItem> children) {
 		this.children = children;
 		return this;
 	}
 	
-	public void appendChild(ReportItem child) {
+	public void appendChild(HieraReportItem child) {
 		if(child.getParent() == null || !child.getParent().equals(this)){
 			child.setParent(this);
 		}
@@ -285,7 +285,7 @@ public class ReportItem {
 		
 	}
 	
-	public boolean hasChildren(ReportItem child) {
+	public boolean hasChildren(HieraReportItem child) {
 		
 		return !children.isEmpty();
 	}

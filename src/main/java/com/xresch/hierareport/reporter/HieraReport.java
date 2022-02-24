@@ -1,44 +1,48 @@
-package com.hierareport.reporter;
+package com.xresch.hierareport.reporter;
 
 import java.io.File;
-
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.zip.ZipInputStream;
 
-import com.hierareport.reporter.ReportItem.ItemStatus;
-import com.hierareport.reporter.ReportItem.ItemType;
-import com.hierareport.utils.Utils;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+
+import com.xresch.hierareport.reporter.HieraReportItem.ItemStatus;
+import com.xresch.hierareport.reporter.HieraReportItem.ItemType;
 
 /**************************************************************************************
  * The Report class provides methods to add items to the reports, create screenshots
  * and write the report to the disk.
  * 
- * © Reto Scheiwiller, 2017 - MIT License
+ * Copyright Reto Scheiwiller, 2017 - MIT License
  **************************************************************************************/
 
-public class Report {
+public class HieraReport {
 	
-	private static final String REPORT_BASE_DIR = "./taureport";
+	private static String REPORT_BASE_DIR = "./target/hieraReport";
 	
 	private static int testNumber = 1;
 
 	// For each type until test level one thread local to make it working in multi-threaded mode
-	private static InheritableThreadLocal<ReportItem> rootItem = new InheritableThreadLocal<ReportItem>();
-	private static InheritableThreadLocal<ReportItem> currentSuite = new InheritableThreadLocal<ReportItem>();
-	private static InheritableThreadLocal<ReportItem> currentClass = new InheritableThreadLocal<ReportItem>();
+	private static InheritableThreadLocal<HieraReportItem> rootItem = new InheritableThreadLocal<HieraReportItem>();
+	private static InheritableThreadLocal<HieraReportItem> currentSuite = new InheritableThreadLocal<HieraReportItem>();
+	private static InheritableThreadLocal<HieraReportItem> currentClass = new InheritableThreadLocal<HieraReportItem>();
 
-	private static ConcurrentHashMap<String,ReportItem> startedClasses = new ConcurrentHashMap<String,ReportItem>();
+	private static ConcurrentHashMap<String,HieraReportItem> startedSuites = new ConcurrentHashMap<String,HieraReportItem>();
+	private static ConcurrentHashMap<String,HieraReportItem> startedClasses = new ConcurrentHashMap<String,HieraReportItem>();
 	
-	private static InheritableThreadLocal<ReportItem> activeItem = new InheritableThreadLocal<ReportItem>();
+	private static InheritableThreadLocal<HieraReportItem> activeItem = new InheritableThreadLocal<HieraReportItem>();
 	
 	//everything else goes here.
-	private static ThreadLocal<ReportItem> currentTest = new ThreadLocal<ReportItem>();
-	private static ThreadLocal<LinkedHashMap<String,ReportItem>> openItems = new ThreadLocal<LinkedHashMap<String,ReportItem>>();
+	private static ThreadLocal<HieraReportItem> currentTest = new ThreadLocal<HieraReportItem>();
+	private static ThreadLocal<LinkedHashMap<String,HieraReportItem>> openItems = new ThreadLocal<LinkedHashMap<String,HieraReportItem>>();
 	
-	private static Logger logger = Logger.getLogger(Report.class.getName());
+	private static Logger logger = Logger.getLogger(HieraReport.class.getName());
 	private static InheritableThreadLocal<WebDriver> driver = new InheritableThreadLocal<WebDriver>();
 	
 	/***********************************************************************************
@@ -48,27 +52,36 @@ public class Report {
 		initializeThreadLocals();
 		
 		logger.info("Cleanup report directory: "+REPORT_BASE_DIR);
-    	ReportUtils.deleteRecursively(new File(REPORT_BASE_DIR));
+    	HieraReportUtils.deleteRecursively(new File(REPORT_BASE_DIR));
     	//Utils.copyRecursively(RESOURCE_BASE_DIR, REPORT_BASE_DIR);
     	    	
-    	InputStream in = Report.class.getClassLoader().getResourceAsStream("com/csg/tau/framework/utils/reporter/reportFiles.zip.txt");
+    	InputStream in = HieraReport.class.getClassLoader().getResourceAsStream("com/xresch/hierareport/reporter/files/reportFiles.zip.txt");
     	ZipInputStream zipStream = new ZipInputStream(in);
-    	ReportUtils.extractZipFile(zipStream, REPORT_BASE_DIR);
-
-
-    	
+    	HieraReportUtils.extractZipFile(zipStream, REPORT_BASE_DIR);
     	
 	} 
 	
-
+	/***********************************************************************************
+	 * Set the directory of the report.
+	 * Do not call this method after your test has already started.
+	 ***********************************************************************************/
+	public static void setReportDirectory(String path) {
+		REPORT_BASE_DIR = path;
+	}
+	/***********************************************************************************
+	 * Set the WebDriver.
+	 ***********************************************************************************/
 	public static void setDriver(WebDriver driver) {
-		Report.driver.set(driver);;
+		HieraReport.driver.set(driver);;
 	}
 	
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/
 	private static void initializeThreadLocals(){
 		
 		if(rootItem.get() == null) {
-			rootItem.set(new ReportItem(ItemType.Step,"root"));
+			rootItem.set(new HieraReportItem(ItemType.Step,"root"));
 		}
 		
 		if(activeItem.get() == null) {
@@ -76,26 +89,37 @@ public class Report {
 		}
 		
 		if(openItems.get() == null) {
-			openItems.set(new LinkedHashMap<String,ReportItem>());
+			openItems.set(new LinkedHashMap<String,HieraReportItem>());
 		}
 		
 	}
 	
-	protected static LinkedHashMap<String,ReportItem> openItems(){
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/
+	protected static LinkedHashMap<String,HieraReportItem> openItems(){
 		initializeThreadLocals();
 		return openItems.get();
 	}
 	
-	
-	public static ReportItem getActiveItem(){
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/
+	public static HieraReportItem getActiveItem(){
 		initializeThreadLocals();
 		return activeItem.get();
 	}
 	
-	protected static void setCurrentTest(ReportItem testItem){
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/
+	protected static void setCurrentTest(HieraReportItem testItem){
 		currentTest.set(testItem);
 	}
 	
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/
 	protected static String getTestDirectory(){
 		String testfolderName = currentTest.get().getFixSizeNumber() + "_" + currentTest.get().getTitle();
 		return REPORT_BASE_DIR+"/"+testfolderName.replaceAll("[^a-zA-Z0-9]", "_")+"/";
@@ -105,9 +129,17 @@ public class Report {
 	 * Starts a new suite, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
-	public static ReportItem startSuite(String title){
+	public static HieraReportItem startSuite(String title){
 		
-		currentSuite.set(Report.startItem(ItemType.Suite, title));
+		if(startedSuites.containsKey(title)){
+			HieraReportItem suiteItem = startedSuites.get(title);
+			activeItem.set(suiteItem);
+			return suiteItem;
+		}
+		
+		HieraReportItem suiteItem = HieraReport.startItem(ItemType.Suite, title);
+		currentSuite.set(suiteItem);
+		startedSuites.put(title, suiteItem);
 		
 		return currentSuite.get();
 	}
@@ -115,10 +147,10 @@ public class Report {
 	/***********************************************************************************
 	 * Ends the current Suite.
 	 ***********************************************************************************/
-	public static ReportItem endCurrentSuite(){
+	public static HieraReportItem endCurrentSuite(){
 		
-		ReportItem suiteItem = currentSuite.get();
-		Report.end(suiteItem.getTitle());
+		HieraReportItem suiteItem = currentSuite.get();
+		HieraReport.end(suiteItem.getTitle());
 		
 		return currentSuite.get();
 	}
@@ -127,15 +159,15 @@ public class Report {
 	 * Starts a new class, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
-	public static ReportItem startClass(String title){
+	public static HieraReportItem startClass(String title){
 		
 		if(startedClasses.containsKey(title)){
-			ReportItem classItem = startedClasses.get(title);
+			HieraReportItem classItem = startedClasses.get(title);
 			activeItem.set(classItem);
 			return classItem;
 		}
 		
-		ReportItem classItem = Report.startItem(ItemType.Class, title, currentSuite.get());
+		HieraReportItem classItem = HieraReport.startItem(ItemType.Class, title, currentSuite.get());
 		currentClass.set(classItem);
 		startedClasses.put(title, classItem);
 		
@@ -145,12 +177,12 @@ public class Report {
 	/***********************************************************************************
 	 * Ends the current Class.
 	 ***********************************************************************************/
-	public static ReportItem endCurrentClass(){
+	public static HieraReportItem endCurrentClass(){
 		
-		ReportItem classItem = ReportItem.getFirstElementWithType(activeItem.get(), ItemType.Class);
+		HieraReportItem classItem = HieraReportItem.getFirstElementWithType(activeItem.get(), ItemType.Class);
 
 		if(classItem != null){
-			Report.end(classItem.getTitle());
+			HieraReport.end(classItem.getTitle());
 		}else{
 			logger.warning("The current class could not be ended.");
 		}
@@ -162,9 +194,9 @@ public class Report {
 	 * Starts a new test, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
-	public static ReportItem startTest(String title){
+	public static HieraReportItem startTest(String title){
 		
-		currentTest.set(Report.startItem(ItemType.Test, title, currentClass.get()).setItemNumber(testNumber));
+		currentTest.set(HieraReport.startItem(ItemType.Test, title, currentClass.get()).setItemNumber(testNumber));
 		testNumber++;
 		
 		resetItemCounter();
@@ -175,16 +207,16 @@ public class Report {
 	/***********************************************************************************
 	 * Ends the currentTest.
 	 ***********************************************************************************/
-	public static ReportItem endCurrentTest(ItemStatus status){
+	public static HieraReportItem endCurrentTest(ItemStatus status){
 		
-		ReportItem testItem = ReportItem.getFirstElementWithType(activeItem.get(), ItemType.Test);
+		HieraReportItem testItem = HieraReportItem.getFirstElementWithType(activeItem.get(), ItemType.Test);
 		
 		if(testItem != null){
 			testItem.setStatus(status);
 			
-			Report.end(testItem.getTitle());
+			HieraReport.end(testItem.getTitle());
 	    	//Report.setStatusOnCurrentTree(status);
-			ReportUtils.writeStringToFile(getTestDirectory(), "result.json", Utils.generateJSON(testItem));
+			HieraReportUtils.writeStringToFile(getTestDirectory(), "result.json", HieraReportUtils.generateJSON(testItem));
 			
 			logger.info("TEST END - "+testItem.getTitle()+" ["+status.name().toUpperCase()+"]");
 		}else{
@@ -199,7 +231,7 @@ public class Report {
 	 * Starts a new group, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
-	public static ReportItem start(String title){
+	public static HieraReportItem start(String title){
 		
 		return startItem(ItemType.Step, title);
 	}
@@ -208,7 +240,7 @@ public class Report {
 	 * Starts a new group, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
-	public static ReportItem startWait(String title){
+	public static HieraReportItem startWait(String title){
 		
 		return startItem(ItemType.Wait, title);
 	}
@@ -217,7 +249,7 @@ public class Report {
 	 * Starts a new group, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
-	public static ReportItem startAssert(String title){
+	public static HieraReportItem startAssert(String title){
 		
 		return startItem(ItemType.Assert, title);
 	}
@@ -226,20 +258,20 @@ public class Report {
 	 * Starts a new item, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
-	private static ReportItem startItem(ItemType type, String title){
+	private static HieraReportItem startItem(ItemType type, String title){
 		
-		return Report.startItem(type, title, null);
+		return HieraReport.startItem(type, title, null);
 	}
 	
 	/***********************************************************************************
 	 * Starts a new item, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
-	private static ReportItem startItem(ItemType type, String title, ReportItem parent){
+	private static HieraReportItem startItem(ItemType type, String title, HieraReportItem parent){
 				
-		ReportItem item = new ReportItem(type, title);
+		HieraReportItem item = new HieraReportItem(type, title);
 		
-		logger.info("START "+getLogIndendation()+" "+item.getFixSizeNumber()+" "+title);	
+		logger.info("\nSTART "+getLogIndendation()+" "+item.getFixSizeNumber()+" "+title);	
 		
 		if(parent == null){
 			item.setParent(getActiveItem());
@@ -255,7 +287,7 @@ public class Report {
 	/***********************************************************************************
 	 * Add a item to the report without the need of starting and ending it.
 	 ***********************************************************************************/
-	public static ReportItem addInfoMessage(String title, String message){
+	public static HieraReportItem addInfoMessage(String title, String message){
 				
 		return addItem(ItemType.MessageInfo, title).setDescription(message).setStatus(ItemStatus.Undefined);
 	}
@@ -263,7 +295,7 @@ public class Report {
 	/***********************************************************************************
 	 * Add a item to the report without the need of starting and ending it.
 	 ***********************************************************************************/
-	public static ReportItem addWarnMessage(String title, String message){
+	public static HieraReportItem addWarnMessage(String title, String message){
 				
 		return addItem(ItemType.MessageWarn, title).setDescription(message).setStatus(ItemStatus.Undefined);
 	}
@@ -271,7 +303,7 @@ public class Report {
 	/***********************************************************************************
 	 * Add a item to the report without the need of starting and ending it.
 	 ***********************************************************************************/
-	public static ReportItem addErrorMessage(String title, String message){
+	public static HieraReportItem addErrorMessage(String title, String message){
 				
 		return addItem(ItemType.MessageError, title).setDescription(message).setStatus(ItemStatus.Undefined);
 	}
@@ -279,7 +311,7 @@ public class Report {
 	/***********************************************************************************
 	 * Add a item to the report without the need of starting and ending it.
 	 ***********************************************************************************/
-	public static ReportItem addErrorMessage(String title, String message, Throwable e){
+	public static HieraReportItem addErrorMessage(String title, String message, Throwable e){
 				
 		return addItem(ItemType.MessageError, title)
 				.setDescription(message)
@@ -289,11 +321,11 @@ public class Report {
 	/***********************************************************************************
 	 * Add a item to the report without the need of starting and ending it.
 	 ***********************************************************************************/
-	public static ReportItem addItem(ItemType type, String title){
+	public static HieraReportItem addItem(ItemType type, String title){
 		
 		logger.info("  ADD   "+getLogIndendation()+" "+title);	
 		
-		ReportItem item = new ReportItem(type, title);
+		HieraReportItem item = new HieraReportItem(type, title);
 		item.setParent(getActiveItem());
 		
 		return item;
@@ -302,11 +334,11 @@ public class Report {
 	/***********************************************************************************
 	 * Close the item and returns it to be able to set further details.
 	 ***********************************************************************************/
-	public static ReportItem end(String title){
+	public static HieraReportItem end(String title){
 
 		if(!openItems().isEmpty()
 		&& openItems().containsKey(title)){
-			ReportItem itemToEnd = openItems().get(title);
+			HieraReportItem itemToEnd = openItems().get(title);
 			
 			try{
 				if(driver.get() != null){
@@ -325,7 +357,7 @@ public class Report {
 			return itemToEnd;
 		}else{
 			logger.warning("The item is not started and can not be ended: '"+title+"'");
-			return new ReportItem(ItemType.MessageInfo, "Prevent NullPointerException");
+			return new HieraReportItem(ItemType.MessageInfo, "Prevent NullPointerException");
 		}
 		
 		
@@ -366,11 +398,11 @@ public class Report {
 		                "</body></html>";
 	
 	        	String filepath = directory+"/"+filename;
-	        	ReportUtils.writeStringToFile(directory, filename, screenshot);
+	        	HieraReportUtils.writeStringToFile(directory, filename, screenshot);
 				getActiveItem().setScreenshotPath(filepath.replace(REPORT_BASE_DIR, "./"));
 			
 			}catch(Exception e){
-				logger.severe("An exception occured on taking screenshot", e);
+				logger.severe("An exception occured on taking screenshot");
 			}
 		    
 	    } else {
@@ -402,16 +434,16 @@ public class Report {
 		    	
 		        // Get the screenshot as Base64 data
 		        byte[] screenshotBytes = ((TakesScreenshot)localDriver).getScreenshotAs(OutputType.BYTES);
-		        FileUtils.writeByteArrayToFile(new File(filepath), screenshotBytes);
-
+		        FileUtils.writeByteArrayToFile(new File(filepath), screenshotBytes);;
+		        
 				getActiveItem().setScreenshotPath(filepath.replace(REPORT_BASE_DIR, "./"));
 			
 			}catch(Exception e){
-				logger.warn("An exception occured on taking screenshot", e);
+				logger.warning("An exception occured on taking screenshot:"+e.getMessage());
 			}
 		    
 	    } else {
-	        logger.warn("Driver does not support taking screenshots");
+	        logger.warning("Driver does not support taking screenshots.");
 	    }
 	    	
 	}
@@ -436,11 +468,11 @@ public class Report {
 	        String source = localDriver.getPageSource();
 	        
 	    	String filepath = directory+"/"+filename;
-	    	ReportUtils.writeStringToFile(directory, filename, source);
+	    	HieraReportUtils.writeStringToFile(directory, filename, source);
 			getActiveItem().setSourcePath(filepath.replace(REPORT_BASE_DIR, "./"));
 			
 		}catch(Exception e){
-			logger.severe("An exception occured on saving the HTML source.", e);
+			logger.severe("An exception occured on saving the HTML source: "+e.getMessage());
 		}
 		
 	}
@@ -450,7 +482,7 @@ public class Report {
 	 ***********************************************************************************/
 	protected static void setStatusOnCurrentTree(ItemStatus status){
 			
-		for(ReportItem item : openItems().values()){
+		for(HieraReportItem item : openItems().values()){
 
 			if(status == ItemStatus.Fail){ 
 				item.setStatus(status);
@@ -481,7 +513,7 @@ public class Report {
 	 * Reset Item Counter.
 	 ***********************************************************************************/
 	protected static void resetItemCounter(){
-		ReportItem.resetItemCounter();
+		HieraReportItem.resetItemCounter();
 	}
 	
 	/***********************************************************************************
@@ -489,14 +521,14 @@ public class Report {
 	 ***********************************************************************************/
 	protected static void createFinalReport(){
 		
-		for(ReportItem item : openItems().values()){
+		for(HieraReportItem item : openItems().values()){
 			logger.warning("Item was not ended properly: '"+item.getTitle()+"'");
 			item.endItem().setTitle(item.getTitle()+"(NOT ENDED PROPERLY)");
 		}
-		String json = Utils.generateJSON(rootItem.get().getChildren());
+		String json = HieraReportUtils.generateJSON(rootItem.get().getChildren());
 
 		String javascript = "DATA = DATA.concat(\n"+json+"\n);";
-		ReportUtils.writeStringToFile(REPORT_BASE_DIR, "data.js", javascript);
+		HieraReportUtils.writeStringToFile(REPORT_BASE_DIR, "data.js", javascript);
 	}
 	
 }

@@ -1,4 +1,4 @@
-package com.hierareport.reporter;
+package com.xresch.hierareport.reporter;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,18 +20,28 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.hierareport.utils.Utils;
+import org.apache.commons.io.FileUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**************************************************************************************
  * Just some utility methods used to create the report.
  * 
- * © Reto Scheiwiller, 2017 - MIT License
+ * Copyright Reto Scheiwiller, 2017 - MIT License
  **************************************************************************************/
 
-public class ReportUtils {
+public class HieraReportUtils {
 	
-	public static Logger logger = Logger.getLogger(ReportUtils.class);
+	public static Logger logger = Logger.getLogger(HieraReportUtils.class.getName());
 	private static final int BUFFER_SIZE = 4096;
+	
+	
+	private static Gson gson = new GsonBuilder()
+				    	.setPrettyPrinting()
+				    	.disableHtmlEscaping()
+				    	.create()
+				    	;
 
 	/********************************************************************************************
 	 * 
@@ -90,7 +100,7 @@ public class ReportUtils {
 		    });
 	    
 		} catch (IOException e) {
-			logger.severe("Issue extracting zip file.", e);
+			logger.severe("Issue extracting zip file: "+e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -143,14 +153,14 @@ public class ReportUtils {
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
-	public static void deleteRecursively(File f){
+	public static void deleteRecursively(File fileOrDirectory){
 		
-		if (f.isDirectory()) {
+		if (fileOrDirectory.isDirectory()) {
 			
 			try {
-				FileUtils.deleteDirectory(f);
+				FileUtils.deleteDirectory(fileOrDirectory);
 			} catch (IOException e) {
-				Utils.logger.log(Level.SEVERE, "Error occured deleting directory '"+f.getPath()+"'.", e);
+				logger.log(Level.SEVERE, "Error occured deleting directory '"+fileOrDirectory.getPath()+"'.", e);
 				e.printStackTrace();
 			}
 	
@@ -226,12 +236,6 @@ public class ReportUtils {
 	 * 
 	 ********************************************************************************************/
 	 public static String generateJSON(Object o) {
-    	
-    	GsonBuilder builder = new GsonBuilder();
-    	builder.setPrettyPrinting();
-    	builder.disableHtmlEscaping();
-    	
-        Gson gson = builder.create();
         
         return gson.toJson(o);
     }
