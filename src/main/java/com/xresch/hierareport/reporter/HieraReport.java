@@ -245,7 +245,7 @@ public class HieraReport {
 	
 
 	/***********************************************************************************
-	 * Starts a new group, sets it as the active group and returns it to be able to set 
+	 * Starts a new step, sets it as the active group and returns it to be able to set 
 	 * further details.
 	 ***********************************************************************************/
 	public static HieraReportItem start(String title){
@@ -442,27 +442,35 @@ public class HieraReport {
 		}
 		
 	    if(localDriver instanceof TakesScreenshot) {
+	    	byte[] screenshotBytes = ((TakesScreenshot)localDriver).getScreenshotAs(OutputType.BYTES);
 	    	
-	    	try{
-	    		
-	    		String filename = getActiveItem().getFixSizeNumber()+"_Screenshot_"+getActiveItem().getTitle().replaceAll("[^a-zA-Z0-9]", "_")+".png";
-	    		String directory = getTestDirectory()+"screenshots";
-	    		String filepath = directory+"/"+filename;
-		    	
-		        // Get the screenshot as Base64 data
-		        byte[] screenshotBytes = ((TakesScreenshot)localDriver).getScreenshotAs(OutputType.BYTES);
-		        FileUtils.writeByteArrayToFile(new File(filepath), screenshotBytes);;
-		        
-				getActiveItem().setScreenshotPath(filepath.replace(CONFIG_REPORT_BASE_DIR, "./"));
-			
-			}catch(Exception e){
-				logger.warning("An exception occured on taking screenshot:"+e.getMessage());
-			}
+	    	addScreenshot(screenshotBytes);
 		    
 	    } else {
 	        logger.warning("Driver does not support taking screenshots.");
 	    }
 	    	
+	}
+
+    /**************************************************************************************
+	 * Add a screenshot to the current step.
+	 * 
+     **************************************************************************************/ 
+	public static void addScreenshot(byte[] screenshotBytes) {
+		try{
+			
+			String filename = getActiveItem().getFixSizeNumber()+"_Screenshot_"+getActiveItem().getTitle().replaceAll("[^a-zA-Z0-9]", "_")+".png";
+			String directory = getTestDirectory()+"screenshots";
+			String filepath = directory+"/"+filename;
+			
+		    // Get the screenshot as Base64 data
+		    FileUtils.writeByteArrayToFile(new File(filepath), screenshotBytes);;
+		    
+			getActiveItem().setScreenshotPath(filepath.replace(CONFIG_REPORT_BASE_DIR, "./"));
+		
+		}catch(Exception e){
+			logger.warning("An exception occured on taking screenshot:"+e.getMessage());
+		}
 	}
 	
     /**************************************************************************************

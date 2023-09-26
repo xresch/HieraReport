@@ -30,7 +30,6 @@
 			<version>2.8.9</version>
 		</dependency>
 		
-		
 		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher -->
 		<dependency>
 		    <groupId>org.junit.platform</groupId>
@@ -39,24 +38,65 @@
 		    <scope>provided</scope>
 		</dependency>
 		
-		
+		<!-- ========================================================================== -->
+		<!-- ============================ SCOPE: TESTING ============================== -->
+		<!-- ========================================================================== -->
+
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.6.2</version>
+			<version>5.7.2</version>
 			<scope>provided</scope>
 		</dependency>
-
+		
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.6.2</version>
+			<version>5.7.2</version>
 			<scope>provided</scope>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons -->
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-commons</artifactId>
+		    <version>1.8.2</version>
+		    <scope>provided</scope>
+		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-api -->
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-api</artifactId>
+		    <version>1.8.2</version>
+		    <scope>provided</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-engine -->
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-engine</artifactId>
+		    <version>1.8.2</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-commons -->
+		<!-- dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-commons</artifactId>
+		    <version>1.8.2</version>
+		    <scope>runtime</scope>
+		</dependency -->
+		
+		
+		 <dependency>
+	      <groupId>com.microsoft.playwright</groupId>
+	      <artifactId>playwright</artifactId>
+	      <version>1.38.0</version>
+	    </dependency>
+    
 		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
 		<dependency>
 		    <groupId>org.seleniumhq.selenium</groupId>
